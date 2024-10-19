@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './authentification/auth/auth.module';
 import { UsersModule } from './authentification/users/users.module';
-import { Constants } from './constants';
+import { HelloController } from './hello/hello.controller';
 import configuration from './configuration';
 
 @Module({
@@ -16,7 +16,7 @@ import configuration from './configuration';
     AuthModule, 
     UsersModule
   ],
-  controllers: [AppController],
-  providers: [AppService, Constants],
+  controllers: [AppController, HelloController],
+  providers: [AppService],
 })
 export class AppModule {}

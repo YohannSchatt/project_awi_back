@@ -8,5 +8,6 @@ export default () => ({
       port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
       user: process.env.DATABASE_USER || 'default_user',
       password: process.env.DATABASE_PASSWORD || 'default_password',
+      url : process.env.DATABASE_URL || 'default_url',
     },
   });
