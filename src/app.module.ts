@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './authentification/auth/auth.module';
 import { UsersModule } from './authentification/users/users.module';
-import { Constants } from './constants';
 import configuration from './configuration';
 import { PrismaService } from './prisma/prisma.service';
 import { JeuModule } from './jeu/jeu.module';
@@ -20,6 +19,6 @@ import { JeuModule } from './jeu/jeu.module';
     JeuModule
   ],
   controllers: [AppController],
-  providers: [AppService, Constants, PrismaService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
