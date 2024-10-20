@@ -5,6 +5,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './authentification/auth/auth.module';
 import { UsersModule } from './authentification/users/users.module';
+import { HelloController } from './hello/hello.controller';
+import { AdminService } from './admin/admin.service';
+import { AdminModule } from './admin/admin.module';
+import { GestionnaireService } from './gestionnaire/gestionnaire.service';
+import { GestionnaireModule } from './gestionnaire/gestionnaire.module';
 import configuration from './configuration';
 import { PrismaService } from './prisma/prisma.service';
 import { JeuModule } from './jeu/jeu.module';
@@ -15,10 +20,12 @@ import { JeuModule } from './jeu/jeu.module';
     load: [configuration], // Charge la configuration
   }),
     AuthModule, 
-    UsersModule,
+    UsersModule, 
+    AdminModule, 
+    GestionnaireModule,,
     JeuModule
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, AdminService, GestionnaireService, PrismaService],
 })
 export class AppModule {}
