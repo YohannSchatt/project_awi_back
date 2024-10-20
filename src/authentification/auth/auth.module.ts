@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from 'src/common/strategy/jwt.strategy';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
+
+// The AuthModule is a feature module that encapsulates the auth feature.
 @Module({
   imports: [
     UsersModule,
