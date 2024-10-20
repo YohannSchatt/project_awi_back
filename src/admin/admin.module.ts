@@ -4,8 +4,9 @@ import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 
+// The AdminModule is a feature module that encapsulates the admin feature.
 @Module({
-  imports: [], // Ajoutez ici les modules dont vous dépendez, si nécessaire
+  imports: [],
   controllers: [AdminController],
   providers: [AdminService, JwtAuthGuard, RolesGuard],
 })

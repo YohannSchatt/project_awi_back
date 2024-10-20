@@ -1,3 +1,5 @@
+// This file is used to define the configuration of the application.
+
 export default () => ({
     jwt: {
       secret: process.env.JWT_KEY || 'default_secret_key',
