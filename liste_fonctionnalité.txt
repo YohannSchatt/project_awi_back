@@ -1,0 +1,40 @@
+Listes des fonctionnalités 
+
+
+Les visiteurs du site web
+
+N’importe quel personne peut se connecter sans s'identifier afin de s’informer sur la vente de jeux de société durant un festival du jeu : 
+- voir la page d’accueil qui présente la plateforme 
+- voir le catalogue mis à jour des jeux disponibles 
+- voir le détail d’un jeu 
+- voir la liste des vendeurs participants 
+- voit les futurs sessions 
+
+
+Le gestionnaire 
+
+Les gestionnaires sont les principaux utilisateurs du système. Ils jouent le rôle d’hôte de caisse pendant la session de vente. Ils ont également la responsabilité de gérer entièrement les vendeurs et leurs dépôts. Voici la liste exhaustive des fonctionnalités auxquelles ils ont accès : 
+- enregistrer un vendeur dans la base 
+- enregistrer un dépôt d’un vendeur 
+- voir le catalogue des jeux disponibles 
+- enregistrer un achat d’un acheteur 
+- générer la facture d’achat si demandé
+- afficher des informations de comptabilité liées à un vendeur afin de pouvoir lui montrer sur demande 
+- enregistrer un retrait de solde de compte d’un vendeur (avec la date) - enregistrer le retrait de l’entièreté des jeux invendus d’un vendeur - générer la page d’impression des étiquettes d’un dépôt (pdf) 
+- modifier son mot de passe 
+
+
+L’administrateur 
+- ouvrir une session de dépôt-vente (la date de début, de fin, un nom, une description). 
+- modifier le rôle d’un utilisateur 
+- afficher le bilan général : dashboard qui correspond à la trésorerie totale, sommes dues aux vendeurs, frais de dépôt encaissés, commissions prélevées. 
+
+
+Les vendeurs 
+
+A priori, les vendeurs n’ont pas d’interface dédiée, il est possible qu’une soit implémenter plus tard. Ils ont cependant accès au catalogue comme chaque visiteur du site et ils peuvent se rendre en présentiel à tout moment auprès d’un gestionnaire ou admin afin d’être informé de l’état actuel de son stock et des ventes. Fonctionnalités en cas d'implémentation d’interface vendeurs: 
+- se connecter 
+- afficher son bilan financier sous forme de dashboard 
+- afficher son stock 
+- historique des ventes 
+

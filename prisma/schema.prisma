@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Définition du rôle utilisateur
+enum Role {
+  GESTIONNAIRE
+  ADMIN
+}
+
+// Définition des statuts pour JeuUnitaire
+enum Statut {
+  DEPOSE
+  DISPONIBLE
+  VENDU
+  RECUPERER
+}
+
+// Définition de l'état pour JeuUnitaire
+enum Etat {
+  NEUF
+  BONNE_ETAT
+  PIECE_MANQUANTES
+}
+
+// Modèle Utilisateur
+model Utilisateur {
+  idUtilisateur Int      @id @default(autoincrement())
+  prenom        String
+  nom           String
+  email         String   @unique
+  password      String
+  role          Role     
+}
+
+// Modèle Vendeur
+model Vendeur {
+  idVendeur   Int      @id @default(autoincrement())
+  nom         String
+  email       String   @unique
+  numero      String
+  sommeTotale Decimal  @db.Decimal(10, 2)
+  sommeDue    Decimal  @db.Decimal(10, 2)
+  sommeRetire Decimal  @db.Decimal(10, 2)
+  retraits    Retrait[]
+  jeuxUnitaire JeuUnitaire[]
+  participationSessions ParticipationSession[]
+}
+
+// Modèle Retrait
+model Retrait {
+  idRetrait  Int      @id @default(autoincrement())
+  somme      Decimal  @db.Decimal(10, 2)
+  date       DateTime @default(now())
+  vendeur    Vendeur  @relation(fields: [idVendeur], references: [idVendeur])
+  idVendeur  Int
+}
+
+// Modèle Session
+model Session {
+  idSession    Int      @id @default(autoincrement())
+  dateDebut    DateTime
+  dateFin      DateTime
+  description  String
+  participations ParticipationSession[]
+}
+
+// Modèle ParticipationSession
+model ParticipationSession {
+  idSession Int
+  idVendeur Int
+  session   Session   @relation(fields: [idSession], references: [idSession])
+  vendeur   Vendeur   @relation(fields: [idVendeur], references: [idVendeur])
+
+  @@id([idSession, idVendeur])
+}
+
+// Modèle Jeu
+model Jeu {
+  idJeu    Int      @id @default(autoincrement())
+  nom      String
+  editeur  String
+  jeuxUnitaire JeuUnitaire[]
+}
+
+// Modèle JeuUnitaire
+model JeuUnitaire {
+  idJeuUnitaire Int      @id @default(autoincrement())
+  prix          Decimal  @db.Decimal(10, 2)
+  statut        Statut
+  dateAchat     DateTime
+  etat          Etat
+  vendeur       Vendeur  @relation(fields: [idVendeur], references: [idVendeur])
+  idVendeur     Int
+  jeu           Jeu      @relation(fields: [idJeu], references: [idJeu])
+  idJeu         Int
+}
+
+
+// model Post {
+//   id        Int      @default(autoincrement()) @id
+//   title     String
+//   content   String?
+//   published Boolean? @default(false)
+//   author    User?    @relation(fields: [authorId], references: [id])
+//   authorId  Int?
+// }
