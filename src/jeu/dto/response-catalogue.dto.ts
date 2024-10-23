@@ -1,6 +1,6 @@
 // src/jeu/dto/response-catalogue.dto.ts
-import { InfoJeuDto } from './response-info-jeu.dto';
+import { InfoJeuUnitaireDto } from './response-info-jeu-unitaire.dto';
 
 export class CatalogueDto {
-  jeux: InfoJeuDto[];
+  jeux: InfoJeuUnitaireDto[];
 }

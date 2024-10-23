@@ -47,20 +47,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await this.vendeur.createMany({
         data: [
           {
-            nom: 'Vendeur1',
+            prenom: 'Jean-Pierre',
+            nom: 'le Vendeur premier',
             email: 'vendeur1@example.com',
             numero: '1234567890',
-            sommeTotale: 1000.00,
-            sommeDue: 500.00,
-            sommeRetire: 500.00,
           },
           {
-            nom: 'Vendeur2',
+            prenom : 'Paul-Henri',
+            nom: 'le deuxième Vendeur',
             email: 'vendeur2@example.com',
             numero: '0987654321',
-            sommeTotale: 2000.00,
-            sommeDue: 1000.00,
-            sommeRetire: 1000.00,
           },
         ],
       });

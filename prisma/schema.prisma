@@ -39,7 +39,7 @@ enum Etat {
 // Modèle Utilisateur
 model Utilisateur {
   idUtilisateur Int      @id @default(autoincrement())
-  prenom        String
+  prenom        String   
   nom           String
   email         String   @unique
   password      String
@@ -49,12 +49,13 @@ model Utilisateur {
 // Modèle Vendeur
 model Vendeur {
   idVendeur   Int      @id @default(autoincrement())
+  prenom      String
   nom         String
   email       String   @unique
   numero      String
-  sommeTotale Decimal  @db.Decimal(10, 2)
-  sommeDue    Decimal  @db.Decimal(10, 2)
-  sommeRetire Decimal  @db.Decimal(10, 2)
+  sommeTotale Decimal @default(0.0) @db.Decimal(10, 2)
+  sommeDue    Decimal @default(0.0) @db.Decimal(10, 2)
+  sommeRetire Decimal @default(0.0) @db.Decimal(10, 2)
   retraits    Retrait[]
   jeuxUnitaire JeuUnitaire[]
   participationSessions ParticipationSession[]
@@ -93,7 +94,7 @@ model Jeu {
   idJeu    Int      @id @default(autoincrement())
   nom      String
   editeur  String
-  description  String
+  description  String?
   jeuxUnitaire JeuUnitaire[]
 }
 
@@ -102,7 +103,7 @@ model JeuUnitaire {
   idJeuUnitaire Int      @id @default(autoincrement())
   prix          Decimal  @db.Decimal(10, 2)
   statut        Statut
-  dateAchat     DateTime
+  dateAchat     DateTime?
   etat          Etat
   vendeur       Vendeur  @relation(fields: [idVendeur], references: [idVendeur])
   idVendeur     Int
