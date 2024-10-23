@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -91,6 +93,7 @@ model Jeu {
   idJeu    Int      @id @default(autoincrement())
   nom      String
   editeur  String
+  description  String
   jeuxUnitaire JeuUnitaire[]
 }
 
@@ -108,7 +111,9 @@ model JeuUnitaire {
 }
 
 
-// model Post {
+// mode
+
+
 //   id        Int      @default(autoincrement()) @id
 //   title     String
 //   content   String?
