@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body , Get} from '@nestjs/common';
 import { VendeurService } from './vendeur.service';
 import { CreateVendeurDto } from './dto/create-vendeur.dto';
 import { Vendeur } from '@prisma/client';
@@ -11,4 +11,14 @@ export class VendeurController {
   createVendeur(@Body() createVendeurDto: CreateVendeurDto): Promise<Vendeur> {
     return this.vendeurService.createVendeur(createVendeurDto);
   }
+
+  @Get('getListVendeur')
+  getListVendeur(): Promise<Vendeur[]> {
+    return this.vendeurService.getListVendeur();
+  }
+
+  //updateVendeur
+
+
+
 }

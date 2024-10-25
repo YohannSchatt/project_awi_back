@@ -8,17 +8,19 @@ export class CreateJeuUnitaireDto {
   @Type(() => String)
   prix: number;
 
-  
+  @IsNotEmpty()
   @IsEnum(Statut)
   statut: Statut;
 
-
+  @IsNotEmpty()
   @IsEnum(Etat)
   etat: Etat;
 
+  @IsNotEmpty()
   @IsInt()
   idVendeur: number;
 
+  @IsNotEmpty()
   @IsInt()
   idJeu: number;
 }

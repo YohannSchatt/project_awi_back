@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateJeuDto } from './dto/create-jeu.dto';
-import { UpdateJeuDto } from './dto/update-jeu.dto';
+// import { UpdateJeuDto } from './dto/update-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
-import { InfoJeuUnitaireDto } from './dto/response-info-jeu-unitaire.dto';
+import { InfoJeuUnitaireDto } from "./dto/response-catalogue.dto"
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Jeu } from '@prisma/client';
 import { ListeJeuDto } from './dto/response-list-jeu.dto';
@@ -15,9 +15,9 @@ export class JeuService {
   
   constructor(private readonly prisma: PrismaService) {}
   
-  create(createJeuDto: CreateJeuDto) {
-    return 'This action adds a new jeu';
-  }
+  // create(createJeuDto: CreateJeuDto) {
+  //   return 'This action adds a new jeu';
+  // }
   
   async findFromPage(pageNumber: number): Promise<CatalogueDto> {
     const pageSize : number = 20; // Define the page size
@@ -68,7 +68,7 @@ export class JeuService {
       where: { idVendeur },
     });
     if (!vendeur) {
-      throw new NotFoundException(`Vendeur with id ${idVendeur} not found`);
+      throw new NotFoundException(`Aucun vendeur avec l'id ${idVendeur} n'a été trouvé`);
     }
 
     // Check if the Jeu exists
@@ -76,13 +76,14 @@ export class JeuService {
       where: { idJeu },
     });
     if (!jeu) {
-      throw new NotFoundException(`Jeu with id ${idJeu} not found`);
+      throw new NotFoundException(`Aucun jeu avec l'id ${idJeu} n'a été trouvé`);
     }
 
     return this.prisma.jeuUnitaire.create({
       data: createJeuUnitaireDto,
     });
   }
+
   
   async getListeJeu(): Promise<ListeJeuDto> {
     const jeux = await this.prisma.jeu.findMany();

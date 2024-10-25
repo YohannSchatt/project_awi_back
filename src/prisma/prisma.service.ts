@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { cp } from 'fs';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -14,6 +15,23 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.addVendeur();
     await this.addJeu();
     await this.addJeuUnitaire();
+    await this.addSessionEnCours();
+  }
+  async addSessionEnCours() {
+    if((await this.session.count()) > 0) {
+      console.log('Database already contains sessions. Skipped filling.');
+      return;
+    }
+    const currentDate = new Date();
+    const dateInFiftyDays = new Date(currentDate.getTime() + 50 * 24 * 60 * 60 * 1000);
+    this.session.create({
+      data: {
+        dateDebut: currentDate,
+        dateFin: dateInFiftyDays,
+        description: 'Session Test : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
+      },
+    });
+    console.log('Database has been filled with initial data for session.');
   }
 
   async create2Gestionnaire() {
