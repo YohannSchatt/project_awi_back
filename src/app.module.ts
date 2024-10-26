@@ -22,7 +22,7 @@ import { JeuModule } from './jeu/jeu.module';
     AuthModule, 
     UsersModule, 
     AdminModule, 
-    GestionnaireModule,,
+    GestionnaireModule,
     JeuModule
   ],
   controllers: [AppController],
