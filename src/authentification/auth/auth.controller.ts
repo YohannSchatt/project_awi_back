@@ -11,6 +11,35 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() SignInDto: SignInDto) {
-    return this.authService.signIn(SignInDto);
+    if (!SignInDto.email || !SignInDto.password) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+        message: [
+          'email should not be empty',
+          'password should not be empty',
+        ],
+      };
+    }
+    if (SignInDto.email === '' || SignInDto.password === '') {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+        message: [
+          'email should not be empty',
+          'password should not be empty',
+        ],
+      };
+    }
+    try {
+      return this.authService.signIn(SignInDto);
+    }
+    catch (error) {
+      return {
+        statusCode: HttpStatus.UNAUTHORIZED,
+        error: 'Unauthorized',
+        message: error.message,
+      };
+    }
   }
 }

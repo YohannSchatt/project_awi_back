@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, Param } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetUserDto } from './dto/get-user.dto';
 import { GetPayloadDto } from './dto/get-payload.dto';
@@ -53,12 +53,12 @@ export class UserService {
         }
     })
     if (!user){
-        throw new NotFoundException(`User with email ${email} not found`)
+        throw new BadRequestException('User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        throw new BadRequestException('Invalid credentials');
+        throw new UnauthorizedException('Invalid credentials');
     }
 
     return {

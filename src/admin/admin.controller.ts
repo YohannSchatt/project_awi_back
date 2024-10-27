@@ -24,10 +24,4 @@ export class AdminController {
     adminEndpoint() {
       return 'This is an admin endpoint';
     }
-
-    @Get('Name')
-    @HttpCode(HttpStatus.OK)
-    adminDataNameEndpoint(@CurrentUser() user : any) {
-        return this.adminService.getAdminDataName(user);
-    }
 }

@@ -22,10 +22,4 @@ export class GestionnaireController {
     gestionnaireEndpoint() {
       return 'This is a gestionnaire endpoint';
     }
-
-    @Get('Name')
-    @HttpCode(HttpStatus.OK)
-    gestionnaireDataNameEndpoint(@CurrentUser() user : any) {
-        return this.gestionnaireService.getGestionnaireDataName(user);
-    }
 }

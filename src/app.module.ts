@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './authentification/auth/auth.module';
-import { UsersModule } from './authentification/users/users.module';
 import { AdminService } from './admin/admin.service';
 import { AdminModule } from './admin/admin.module';
 import { GestionnaireService } from './gestionnaire/gestionnaire.service';
@@ -22,7 +21,6 @@ import { UserModule } from './user/user.module';
     load: [configuration], //load configuration from a configuration.ts file
   }),
     AuthModule, 
-    UsersModule, 
     AdminModule, 
     GestionnaireModule,
     JeuModule,
