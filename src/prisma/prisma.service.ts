@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -17,6 +18,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async create2Gestionnaire() {
+    const salt = await bcrypt.genSalt(10);
     if ((await this.utilisateur.count()) < 1) {
       await this.utilisateur.createMany({
         data: [
@@ -24,15 +26,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
             prenom: 'shane',
             nom: 'donnelly',
             email: 'shane@example.com',
-            password: 'password123', // Ensure to hash passwords in a real application
+            password: await bcrypt.hash('password123',salt), // Ensure to hash passwords in a real application
             role: 'GESTIONNAIRE',
           },
           {
             prenom: 'yohann',
             nom: 'schatt',
             email: 'yohann@example.com',
-            password: 'password123', // Ensure to hash passwords in a real application
-            role: 'GESTIONNAIRE',
+            password: await bcrypt.hash('password1234',salt), // Ensure to hash passwords in a real application
+            role: 'ADMIN',
           },
         ],
       });

@@ -1,5 +1,6 @@
 import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { SignInDto } from './dto/sign-In.dto';
 
 // The AuthController is a RESTful controller that implements the auth feature.
 // The @Controller() decorator defines the base route for the auth feature.
@@ -9,7 +10,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(@Body() SignInDto: SignInDto) {
+    return this.authService.signIn(SignInDto);
   }
 }

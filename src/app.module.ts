@@ -12,6 +12,8 @@ import { GestionnaireModule } from './gestionnaire/gestionnaire.module';
 import configuration from './configuration';
 import { PrismaService } from './prisma/prisma.service';
 import { JeuModule } from './jeu/jeu.module';
+import { UserService } from './user/user.service';
+import { UserModule } from './user/user.module';
 // The AppModule is the root module of the application.
 @Module({
   imports: [ConfigModule.forRoot({
@@ -23,9 +25,10 @@ import { JeuModule } from './jeu/jeu.module';
     UsersModule, 
     AdminModule, 
     GestionnaireModule,
-    JeuModule
+    JeuModule,
+    UserModule
   ],
   controllers: [AppController],
-  providers: [AppService, AdminService, GestionnaireService, PrismaService],
+  providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService],
 })
 export class AppModule {}
