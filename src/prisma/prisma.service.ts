@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { cp } from 'fs';
+
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -10,6 +10,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.fillDatabase();
   }
 
+  //dev only
   async fillDatabase() {
     await this.create2Gestionnaire();
     await this.addVendeur();
@@ -24,7 +25,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
     const currentDate = new Date();
     const dateInFiftyDays = new Date(currentDate.getTime() + 50 * 24 * 60 * 60 * 1000);
-    this.session.create({
+    await this.session.create({
       data: {
         dateDebut: currentDate,
         dateFin: dateInFiftyDays,

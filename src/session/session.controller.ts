@@ -17,10 +17,10 @@ export class SessionController {
     const exists = await this.sessionService.currentSessionExist();
     return { result: exists };
   }
-  // @Post()
-  // create(@Body() createSessionDto: CreateSessionDto) {
-  //   return this.sessionService.create(createSessionDto);
-  // }
+  @Post()
+  create(@Body() createSessionDto: CreateSessionDto) {
+    return this.sessionService.create(createSessionDto);
+  }
 
   // @Get()
   // findAll() {
