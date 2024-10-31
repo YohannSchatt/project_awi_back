@@ -19,7 +19,6 @@ export class UserService {
     }
 
     return {
-      idUtilisateur: user.idUtilisateur,
       prenom: user.prenom,
       nom: user.nom,
       email: user.email,

@@ -3,8 +3,6 @@ import { Role } from '@prisma/client';
 import { IsString, IsInt, IsEmail } from 'class-validator';
 
 export class GetUserDto {
-  @IsInt()
-  idUtilisateur: number;
 
   @IsString()
   prenom: string;
