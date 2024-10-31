@@ -37,6 +37,7 @@ export class AuthController {
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'User logged in successfully',
+        user : await this.authService.GetUserWithId(result.idUtilisateur),
       });
     }
     catch (error) {
