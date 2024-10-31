@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +13,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { JeuModule } from './jeu/jeu.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
+import * as cookieParser from 'cookie-parser';
 // The AppModule is the root module of the application.
 @Module({
   imports: [ConfigModule.forRoot({
@@ -29,4 +30,10 @@ import { UserModule } from './user/user.module';
   controllers: [AppController],
   providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(cookieParser())
+      .forRoutes('*');
+  }
+}

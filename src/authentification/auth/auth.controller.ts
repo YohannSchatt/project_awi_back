@@ -33,7 +33,7 @@ export class AuthController {
     }
     try {
       const result = await this.authService.signIn(SignInDto);
-      res.cookie('Authorization', 'Bearer ' + result.access_token, { httpOnly: true });
+      res.cookie('Authorization', 'Bearer ' + result.access_token, { httpOnly: true, maxAge: 3600000 });
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'User logged in successfully',
