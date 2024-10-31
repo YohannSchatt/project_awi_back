@@ -4,6 +4,7 @@ import { GetUserDto } from './dto/get-user.dto';
 import { GetPayloadDto } from './dto/get-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserInfoDto } from './dto/Update-user-info.dto';
 
 @Injectable()
 export class UserService {
@@ -64,5 +65,47 @@ export class UserService {
         idUtilisateur : user.idUtilisateur,
         role: user.role
     }
+  }
+
+  async updateUser(id: number, data : UpdateUserInfoDto): Promise<void> {
+    const user = await this.prisma.utilisateur.findUnique({
+      where: { idUtilisateur: id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (!data.prenom || !data.nom || !data.email) {
+      throw new BadRequestException('Missing data');
+    }
+
+    await this.prisma.utilisateur.update({
+      where: { idUtilisateur: id },
+      data: { prenom: data.prenom, nom: data.nom, email: data.email },
+    });
+  }
+
+  async updatePassword(id: number, oldpassword: string, newPassword): Promise<void> {
+    const user = await this.prisma.utilisateur.findUnique({
+      where: { idUtilisateur: id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldpassword, user.password);
+    if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await this.prisma.utilisateur.update({
+      where: { idUtilisateur: id },
+      data: { password: hashedPassword },
+    });
   }
 }

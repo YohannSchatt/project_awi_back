@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 
 // The JwtStrategy class extends the PassportStrategy class from the @nestjs/passport package.
 // The validate() method is called when the user is authenticated and returns the user object (append in the request).
@@ -9,13 +10,19 @@ import { ConfigService } from '@nestjs/config';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
+        let token = null;
+        if (req && req.cookies) {
+          token = req.cookies['Authorization'];
+        }
+        return token.replace('Bearer ', '');
+      }]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_KEY'),
     });
   }
 
   async validate(payload: any) {
-    return { userId: payload.userId, username: payload.username, role: payload.role };
+    return { idUtilisateur: payload.idUtilisateur, role: payload.role };
   }
 }
