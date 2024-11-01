@@ -13,6 +13,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { JeuModule } from './jeu/jeu.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
+import { EmailService } from './email/email/email.service';
 import * as cookieParser from 'cookie-parser';
 // The AppModule is the root module of the application.
 @Module({
@@ -28,7 +29,7 @@ import * as cookieParser from 'cookie-parser';
     UserModule
   ],
   controllers: [AppController],
-  providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService],
+  providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService, EmailService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

@@ -12,5 +12,6 @@ export default () => ({
       password: process.env.DATABASE_PASSWORD || 'default_password',
       url : process.env.DATABASE_URL || 'default_url',
       url_front : process.env.FRONTEND_URL || 'default_url_front',
+      email_mdp : process.env.EMAIL_MDP || 'default_email_mdp',
     },
   });
