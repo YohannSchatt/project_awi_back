@@ -42,6 +42,7 @@ export class JeuService {
       description: jeuUnitaire.jeu.description,
       editeur: jeuUnitaire.jeu.editeur,
       prix: Number(jeuUnitaire.prix), // Convert Decimal to number
+      prenomVendeur: jeuUnitaire.vendeur.prenom,
       nomVendeur: jeuUnitaire.vendeur.nom,
       image: this.getStringifiedImage(jeuUnitaire.jeu.idJeu), // Example stringified image
       etat: jeuUnitaire.etat, // Include the statut property

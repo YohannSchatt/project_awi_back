@@ -10,7 +10,7 @@ export class VendeurService {
   constructor(private readonly prisma: PrismaService, private readonly sessionService : SessionService) {}
 
   async createVendeur(createVendeurDto: CreateVendeurDto): Promise<Vendeur> {
-    if (this.prisma.vendeur.findUnique({where: {email: createVendeurDto.email}})) {
+    if (await this.prisma.vendeur.findUnique({where: {email: createVendeurDto.email}})) {
       throw new NotFoundException("Un vendeur avec cet email existe déjà");
     }
 
@@ -25,7 +25,7 @@ export class VendeurService {
       },
     });
     
-    if(this.sessionService.currentSessionExist()){
+    if(await this.sessionService.currentSessionExist()){
       await this.sessionService.ajouterParticipationSessionCourrante(newVendeur.idVendeur);
     }
 
@@ -33,5 +33,31 @@ export class VendeurService {
   }
   async getListVendeur (): Promise<Vendeur[]> {
     return this.prisma.vendeur.findMany();
+  }
+
+  async updateVendeurParticipation(idVendeur: number): Promise<Vendeur> {
+    const vendeur = await this.prisma.vendeur.findUnique({ where: { idVendeur: Number(idVendeur) } });
+    if (!vendeur) {
+      throw new NotFoundException("Vendeur non trouvé");
+    }
+
+    if (await this.sessionService.currentSessionExist()) {
+      await this.sessionService.ajouterParticipationSessionCourrante(idVendeur);
+    }
+
+    return vendeur;
+  }
+
+  async getListVendeurCurrentSession(): Promise<Vendeur[]> {
+    const currentSession = await this.sessionService.currentSession();
+    return this.prisma.vendeur.findMany({
+      where: {
+        participationSessions: {
+          some: {
+            idSession: currentSession.idSession,
+          },
+        },
+      },
+    });
   }
 }

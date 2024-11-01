@@ -17,6 +17,8 @@ export class InfoJeuUnitaireDto {
   @IsNotEmpty()
   prix : number;
   @IsNotEmpty()
+  prenomVendeur: string;
+  @IsNotEmpty()
   nomVendeur: string;
   @IsNotEmpty()
   image: string; // Add the image attribute

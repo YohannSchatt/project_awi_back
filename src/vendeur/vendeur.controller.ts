@@ -1,4 +1,5 @@
-import { Controller, Post, Body , Get} from '@nestjs/common';
+import { Controller, Post, Body , Get, Patch, Param, ParseIntPipe } from '@nestjs/common';
+import { PositiveIntPipe } from 'src/pipe/positiveIntPipe';
 import { VendeurService } from './vendeur.service';
 import { CreateVendeurDto } from './dto/create-vendeur.dto';
 import { Vendeur } from '@prisma/client';
@@ -17,7 +18,15 @@ export class VendeurController {
     return this.vendeurService.getListVendeur();
   }
 
-  //updateVendeur
+  @Get('getListVendeurCurrentSession')
+  getListCurrentSessionVendeur(): Promise<Vendeur[]> {
+    return this.vendeurService.getListVendeurCurrentSession();
+  }
+
+  @Patch('reinscrireVendeur/:id')
+  updateVendeur(@Param('id', ParseIntPipe, PositiveIntPipe) id: number): Promise<Vendeur> {
+    return this.vendeurService.updateVendeurParticipation(id);
+  }
 
 
 

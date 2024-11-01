@@ -1,0 +1,151 @@
+Mapped {/, GET} route
+JeuController {/jeu}:
+DTO {create-jeu-unitaire.dto.ts}: import { IsDecimal, IsEnum, IsInt, IsDateString, IsNotEmpty , IsOptional} from 'class-validator';
+import { Statut, Etat } from '@prisma/client';
+import { Type } from 'class-transformer';
+
+export class CreateJeuUnitaireDto {
+  @IsNotEmpty()
+  @IsDecimal()
+  @Type(() => String)
+  prix: number;
+
+  @IsNotEmpty()
+  @IsEnum(Statut)
+  statut: Statut;
+
+  @IsNotEmpty()
+  @IsEnum(Etat)
+  etat: Etat;
+
+  @IsNotEmpty()
+  @IsInt()
+  idVendeur: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  idJeu: number;
+}
+DTO {create-jeu.dto.ts}: import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class CreateJeuDto {
+  @IsNotEmpty()
+  @IsString()
+  nom: string;
+
+  @IsNotEmpty()
+  @IsString()
+  editeur: string;
+
+  @IsOptional()
+  @IsString()
+  description: string;
+}
+DTO {response-catalogue.dto.ts}: // src/jeu/dto/response-catalogue.dto.ts
+import { IsNotEmpty } from 'class-validator';
+
+export class CatalogueDto {
+  jeux: InfoJeuUnitaireDto[];
+}
+
+export class InfoJeuUnitaireDto {
+  @IsNotEmpty()
+  id: number;
+  @IsNotEmpty()
+  nom: string;
+  @IsNotEmpty()
+  description: string;
+  @IsNotEmpty()
+  editeur: string;
+  @IsNotEmpty()
+  prix : number;
+  @IsNotEmpty()
+  nomVendeur: string;
+  @IsNotEmpty()
+  image: string; // Add the image attribute
+  @IsNotEmpty()
+  etat: string; // Add the statut attribute
+
+  // Add other properties as needed
+}
+DTO {response-list-jeu.dto.ts}: 
+// import { InfoJeuDto } from "./response-info-jeu.dto";
+
+class InfoJeuDto {
+    idJeu: number;
+    nom: string;
+    editeur: string;
+}
+export class ListeJeuDto {
+    jeux: InfoJeuDto[];
+}
+
+DTO {update-jeu.dto.ts}: import { PartialType } from '@nestjs/mapped-types';
+import { CreateJeuDto } from './create-jeu.dto';
+
+export class UpdateJeuDto extends PartialType(CreateJeuDto) {}
+
+Mapped {/jeu/catalogue/:pageNumber, GET} route
+Mapped {/jeu/creerJeu, POST} route
+Mapped {/jeu/creerJeuUnitaire, POST} route
+Mapped {/jeu/listeJeu, GET} route
+VendeurController {/vendeur}:
+DTO {create-vendeur.dto.ts}: import { IsNotEmpty, IsString, IsEmail } from 'class-validator';
+
+export class CreateVendeurDto {
+  @IsNotEmpty()
+  @IsString()
+  prenom: string;
+
+  @IsNotEmpty()
+  @IsString()
+  nom: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  numero: string;
+}
+DTO {update-vendeur.dto.ts}: import { PartialType } from '@nestjs/mapped-types';
+import { CreateVendeurDto } from './create-vendeur.dto';
+
+export class UpdateVendeurDto extends PartialType(CreateVendeurDto) {}
+
+Mapped {/vendeur/creerVendeur, POST} route
+Mapped {/vendeur/getListVendeur, GET} route
+SessionController {/session}:
+DTO {create-session.dto.ts}: import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+
+export class CreateSessionDto {
+  @IsDateString()
+  @IsNotEmpty()
+  dateDebut: string;
+
+  @IsDateString()
+  @IsNotEmpty()
+  dateFin: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+}
+DTO {response-session.dto.ts}: // session.dto.ts
+export class SessionDto {
+  idSession: number;
+  dateDebut: Date;
+  dateFin: Date;
+  description: string;
+  descriptionPeriode: string;
+}
+DTO {update-session.dto.ts}: import { PartialType } from '@nestjs/mapped-types';
+import { CreateSessionDto } from './create-session.dto';
+
+export class UpdateSessionDto extends PartialType(CreateSessionDto) {}
+
+Mapped {/session/currentSession, GET} route
+Mapped {/session/currentSessionExist, GET} route
+Mapped {/session, POST} route
+Nest application successfully started
