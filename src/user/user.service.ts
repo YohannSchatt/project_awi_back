@@ -5,6 +5,7 @@ import { GetPayloadDto } from './dto/get-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserInfoDto } from './dto/Update-user-info.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -107,5 +108,22 @@ export class UserService {
       where: { idUtilisateur: id },
       data: { password: hashedPassword },
     });
+  }
+
+  async deleteUserWithEmail(email :string){
+    const user = await this.prisma.utilisateur.delete({
+      where: { email : email }
+    })
+
+    if (!user) {
+     throw new Error('User not found')
+    }
+  }
+
+  async getGestionnaire() {
+    const user = await this.prisma.utilisateur.findMany({
+      where: { role: Role.GESTIONNAIRE}
+    })
+    return user
   }
 }

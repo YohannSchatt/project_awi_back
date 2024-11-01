@@ -19,9 +19,7 @@ export class UserController {
 
     @Put('UpdateInfoPerso')
     updateUser(@Req() req: Request): Promise<void> {
-        console.log(req.headers.cookie);
         const user = req.user as Payload;
-        console.log('Body :' , req.body);
         return this.userService.updateUser(user.idUtilisateur,req.body);
     }
 
@@ -30,8 +28,6 @@ export class UserController {
         const user = req.user as Payload;
         const oldPassword : string = req.body.oldMdp;
         const newPassword : string = req.body.newMdp;
-         ;
-        console.log(req.body);
         return this.userService.updatePassword(user.idUtilisateur,oldPassword,newPassword);
     }
 }
