@@ -33,7 +33,7 @@ import { VendeurModule } from './vendeur/vendeur.module';
     UserModule, VendeurModule, PrismaModule, SessionModule
   ],
   controllers: [AppController],
-  providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService],
+  providers: [AppService, /*AdminService, GestionnaireService, PrismaService, UserService*/],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

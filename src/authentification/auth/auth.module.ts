@@ -23,7 +23,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, UserService,PrismaService],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, UserService],
   controllers: [AuthController],
   exports: [AuthService],
 })
