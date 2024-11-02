@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDto } from './dto/sign-In.dto';
 
 
 // The AuthService is a service that provides authentication-related functionality.

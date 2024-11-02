@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UserService } from '../../user/user.service';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDto } from './dto/sign-In.dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { Role } from '../../common/enums/role.enum';
 

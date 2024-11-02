@@ -4,7 +4,7 @@ import { GetUserDto } from './dto/get-user.dto';
 import { GetPayloadDto } from './dto/get-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserInfoDto } from './dto/Update-user-info.dto';
+import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 
 @Injectable()
 export class UserService {
