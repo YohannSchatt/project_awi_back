@@ -1,6 +1,6 @@
 import { Body, Controller, Post, HttpCode, HttpStatus, Get, UseGuards } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../common/enums/role.enum';
+import { Role } from '@prisma/client';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -11,7 +11,7 @@ import { GestionnaireService } from './gestionnaire.service';
 // The @Roles() decorator specifies the roles that are allowed to access the gestionnaire feature.
 // The @UseGuards() decorator specifies the guards that are applied to the gestionnaire controller.
 @Controller('gestionnaire')
-@Roles([Role.Admin,Role.Gestionnaire])
+@Roles([Role.ADMIN,Role.GESTIONNAIRE])
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class GestionnaireController {
 

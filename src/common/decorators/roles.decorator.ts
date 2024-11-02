@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { Role } from '../enums/role.enum';
+import { Role } from '@prisma/client';
 
 
 // The Roles() decorator is used to specify the roles that are allowed to access a specific feature.

@@ -108,4 +108,21 @@ export class UserService {
       data: { password: hashedPassword },
     });
   }
+
+  async deleteUserWithEmail(email :string){
+    const user = await this.prisma.utilisateur.delete({
+      where: { email : email }
+    })
+
+    if (!user) {
+     throw new Error('User not found')
+    }
+  }
+
+  async getGestionnaire() {
+    const user = await this.prisma.utilisateur.findMany({
+      where: { role: Role.GESTIONNAIRE}
+    })
+    return user
+  }
 }
