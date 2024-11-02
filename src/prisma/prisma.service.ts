@@ -3,6 +3,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
+
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
@@ -10,11 +11,29 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.fillDatabase();
   }
 
+  //dev only
   async fillDatabase() {
     await this.create2Gestionnaire();
     await this.addVendeur();
     await this.addJeu();
     await this.addJeuUnitaire();
+    await this.addSessionEnCours();
+  }
+  async addSessionEnCours() {
+    if((await this.session.count()) > 0) {
+      console.log('Database already contains sessions. Skipped filling.');
+      return;
+    }
+    const currentDate = new Date();
+    const dateInFiftyDays = new Date(currentDate.getTime() + 50 * 24 * 60 * 60 * 1000);
+    await this.session.create({
+      data: {
+        dateDebut: currentDate,
+        dateFin: dateInFiftyDays,
+        description: 'Session Test : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
+      },
+    });
+    console.log('Database has been filled with initial data for session.');
   }
 
   async create2Gestionnaire() {
@@ -49,20 +68,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await this.vendeur.createMany({
         data: [
           {
-            nom: 'Vendeur1',
+            prenom: 'Jean-Pierre',
+            nom: 'le Vendeur premier',
             email: 'vendeur1@example.com',
             numero: '1234567890',
-            sommeTotale: 1000.00,
-            sommeDue: 500.00,
-            sommeRetire: 500.00,
           },
           {
-            nom: 'Vendeur2',
+            prenom : 'Paul-Henri',
+            nom: 'le deuxième Vendeur',
             email: 'vendeur2@example.com',
             numero: '0987654321',
-            sommeTotale: 2000.00,
-            sommeDue: 1000.00,
-            sommeRetire: 1000.00,
           },
         ],
       });

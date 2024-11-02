@@ -9,13 +9,18 @@ import { AdminModule } from './admin/admin.module';
 import { GestionnaireService } from './gestionnaire/gestionnaire.service';
 import { GestionnaireModule } from './gestionnaire/gestionnaire.module';
 import configuration from './configuration';
-import { PrismaService } from './prisma/prisma.service';
+
 import { JeuModule } from './jeu/jeu.module';
 import { UserService } from './user/user.service';
+import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import * as cookieParser from 'cookie-parser';
-// The AppModule is the root module of the application.
+// The AppModule is the root module of the application.import { VendeurModule } from './vendeur/vendeur.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { SessionModule } from './session/session.module';
+import { VendeurModule } from './vendeur/vendeur.module';
 @Module({
+
   imports: [ConfigModule.forRoot({
     isGlobal: true, //make the configuration module global
     envFilePath: '.env', //load configuration from a .env file
@@ -25,7 +30,7 @@ import * as cookieParser from 'cookie-parser';
     AdminModule, 
     GestionnaireModule,
     JeuModule,
-    UserModule
+    UserModule, VendeurModule, PrismaModule, SessionModule
   ],
   controllers: [AppController],
   providers: [AppService, AdminService, GestionnaireService, PrismaService, UserService],
