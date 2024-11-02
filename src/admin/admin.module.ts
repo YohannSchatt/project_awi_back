@@ -11,6 +11,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Module({
   imports: [],
   controllers: [AdminController],
-  providers: [AdminService, JwtAuthGuard, RolesGuard, EmailService, UserService, PrismaService],
+  providers: [AdminService, JwtAuthGuard, RolesGuard, EmailService, UserService],
 })
 export class AdminModule {}

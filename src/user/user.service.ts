@@ -5,6 +5,7 @@ import { GetPayloadDto } from './dto/get-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserInfoDto } from './dto/update-user-info.dto';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -121,7 +122,7 @@ export class UserService {
 
   async getGestionnaire() {
     const user = await this.prisma.utilisateur.findMany({
-      where: { role: Role.GESTIONNAIRE}
+      where: { role: Role.Gestionnaire}
     })
     return user
   }
