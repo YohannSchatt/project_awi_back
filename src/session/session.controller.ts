@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { use } from 'passport';
+import { Role } from '@prisma/client';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('session')
 export class SessionController {
@@ -17,6 +21,8 @@ export class SessionController {
     const exists = await this.sessionService.currentSessionExist();
     return { result: exists };
   }
+  @UseGuards(RolesGuard)
+  @Roles([Role.ADMIN])
   @Post('createSession')
   create(@Body() createSessionDto: CreateSessionDto) {
     return this.sessionService.create(createSessionDto);

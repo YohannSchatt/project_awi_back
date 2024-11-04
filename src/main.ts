@@ -13,8 +13,10 @@ async function bootstrap() {
   /*, {logger: new CustomLogger(),}*/
  );
 
+ const front_end_url = process.env.FRONT_END_URL || 'http://localhost:4200';
+
  app.enableCors({
-  origin: ['http://localhost:4200', 'http://127.0.0.1:4200'],
+  origin: ['http://localhost:4200', 'http://127.0.0.1:4200', front_end_url],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -24,7 +26,9 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
-  await app.listen(3000);
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 

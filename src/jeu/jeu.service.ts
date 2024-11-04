@@ -6,7 +6,7 @@ import { CatalogueDto } from './dto/response-catalogue.dto';
 import { InfoJeuUnitaireDto } from "./dto/response-catalogue.dto"
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Jeu } from '@prisma/client';
-import { ListeJeuDto } from './dto/response-list-jeu.dto';
+import { InfoJeuDto } from './dto/response-list-jeu.dto';
 
 @Injectable()
 export class JeuService {
@@ -86,15 +86,13 @@ export class JeuService {
   }
 
   
-  async getListeJeu(): Promise<ListeJeuDto> {
+  async getListeJeu(): Promise<InfoJeuDto[]> {
     const jeux = await this.prisma.jeu.findMany();
-    return {
-      jeux: jeux.map(jeu => ({
-        idJeu: jeu.idJeu,
-        nom: jeu.nom,
-        editeur: jeu.editeur,
-      })),
-    };
+    return jeux.map(jeu => ({
+      idJeu: jeu.idJeu,
+      nom: jeu.nom,
+      editeur: jeu.editeur,
+    }));
   }
   getStringifiedImage(idJeu: number): string {
     return 'to complete';

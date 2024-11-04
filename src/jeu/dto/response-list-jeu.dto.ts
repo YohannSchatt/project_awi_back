@@ -1,7 +1,7 @@
 
 // import { InfoJeuDto } from "./response-info-jeu.dto";
 
-class InfoJeuDto {
+export class InfoJeuDto {
     idJeu: number;
     nom: string;
     editeur: string;
