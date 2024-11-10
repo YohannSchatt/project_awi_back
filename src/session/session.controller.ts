@@ -21,6 +21,17 @@ export class SessionController {
     const exists = await this.sessionService.currentSessionExist();
     return { result: exists };
   }
+
+  @Get('NextSession')
+  async getSession() {
+    return await this.sessionService.getNextSession();
+  }
+
+  @Get('ActualSession')
+  async getActualSession() {
+    return await this.sessionService.getActualSession();
+  }
+  
   @UseGuards(RolesGuard)
   @Roles([Role.ADMIN])
   @Post('createSession')

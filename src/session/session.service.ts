@@ -9,7 +9,7 @@ export class SessionService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createSessionDto: CreateSessionDto) {
-    const { dateDebut, dateFin, description } = createSessionDto;
+    const { titre, lieu, dateDebut, dateFin, description } = createSessionDto;
 
     // Convert string dates to Date objects
     const dateDebutObj = new Date(dateDebut);
@@ -18,13 +18,47 @@ export class SessionService {
     // Create the session in the database
     const session = await this.prisma.session.create({
       data: {
+        titre: titre,
+        lieu: lieu,
         dateDebut: dateDebutObj,
         dateFin: dateFinObj,
-        description,
+        description: description,
       },
     });
 
     return session;
+  }
+
+  async getActualSession() {
+    return this.prisma.session.findFirst({
+      where: {
+        AND: [
+          {
+            dateDebut: {
+              lte: new Date(),
+            },
+          },
+          {
+            dateFin: {
+              gte: new Date(),
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  async getNextSession() {
+    return this.prisma.session.findMany({
+      orderBy: {
+        dateDebut: 'asc',
+      },
+      where: {
+        dateDebut: {
+          gte: new Date(),
+        },
+      },
+    });
   }
 
   async currentSessionExist(): Promise<boolean> {

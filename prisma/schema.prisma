@@ -73,6 +73,8 @@ model Retrait {
 // Modèle Session
 model Session {
   idSession    Int      @id @default(autoincrement())
+  titre        String
+  lieu         String
   dateDebut    DateTime
   dateFin      DateTime
   description  String
