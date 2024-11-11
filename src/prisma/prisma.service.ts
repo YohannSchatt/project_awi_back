@@ -26,12 +26,24 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
     const currentDate = new Date();
     const dateInFiftyDays = new Date(currentDate.getTime() + 50 * 24 * 60 * 60 * 1000);
-    await this.session.create({
-      data: {
+    const currentDateOneYearLater = new Date(currentDate.getTime() + 365 * 24 * 60 * 60 * 1000);
+    const dateInFiftyDaysOneYearLater = new Date(dateInFiftyDays.getTime() + 365 * 24 * 60 * 60 * 1000);
+    await this.session.createMany({
+      data: [
+      {
+        titre : 'FioFio',
+        lieu : 'Paris',
         dateDebut: currentDate,
         dateFin: dateInFiftyDays,
         description: 'Session Test : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
       },
+      {
+        titre: 'Session Test 2',
+        lieu : 'Montpellier',
+        dateDebut: currentDateOneYearLater,
+        dateFin: dateInFiftyDaysOneYearLater,
+        description: 'Session Test 2 : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
+      }],
     });
     console.log('Database has been filled with initial data for session.');
   }

@@ -1,6 +1,9 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Res, UseGuards, Req, Get } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-In.dto';
+import { verify } from 'crypto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 // The AuthController is a RESTful controller that implements the auth feature.
 // The @Controller() decorator defines the base route for the auth feature.
@@ -47,5 +50,35 @@ export class AuthController {
         message: error.message,
       });
     }
+  }
+
+  @Get('logout')
+  @UseGuards(JwtAuthGuard)
+  async signOut(@Req() req : Request, @Res() res : Response) {
+    const token = req.cookies['Authorization'];
+
+    await this.authService.invalidateToken(token);
+
+    res.clearCookie('Authorization');
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'User logged out successfully',
+    });
+  }
+
+  @Post('refresh')
+  async refresh(@Res() res) {
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Token refreshed successfully',
+    });
+  }
+
+  @Get('verify')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async verify(@Req() req : Request) {
+    return this.authService.verify(req.user.idUtilisateur);
   }
 }
