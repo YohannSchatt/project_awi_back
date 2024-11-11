@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserModule } from '../../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -9,6 +9,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { UserService } from 'src/user/user.service';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { TokenValidationMiddleware } from 'src/common/Middleware/InvalidateToken';
 
 
 // The AuthModule is a feature module that encapsulates the auth feature.
@@ -27,4 +28,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TokenValidationMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

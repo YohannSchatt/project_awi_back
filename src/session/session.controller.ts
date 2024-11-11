@@ -1,26 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, BadRequestException } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
-import { use } from 'passport';
 import { Role } from '@prisma/client';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('session')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
-  @Get('currentSession')
-  currentSession() {
-    return this.sessionService.currentSession();
-  }
+  // @Get('currentSession')
+  // currentSession() {
+  //   return this.sessionService.currentSession();
+  // }
 
-  @Get('currentSessionExist')
-  async currentSessionExist() {
-    const exists = await this.sessionService.currentSessionExist();
-    return { result: exists };
-  }
+  // @Get('currentSessionExist')
+  // async currentSessionExist() {
+  //   const exists = await this.sessionService.currentSessionExist();
+  //   return { result: exists };
+  // }
 
   @Get('NextSession')
   async getSession() {
@@ -32,11 +32,29 @@ export class SessionController {
     return await this.sessionService.getActualSession();
   }
   
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles([Role.ADMIN])
-  @Post('createSession')
-  create(@Body() createSessionDto: CreateSessionDto) {
+  @Post('CreateSession')
+  create(@Body() createSessionDto: CreateSessionDto,@Req() req : Request) {
     return this.sessionService.create(createSessionDto);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles([Role.ADMIN])
+  @Put('UpdateSession')
+  update(@Body() updateSessionDto: UpdateSessionDto,@Req() req : Request) {
+    return this.sessionService.update(updateSessionDto);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles([Role.ADMIN])
+  @Post('DeleteSession')
+  delete(@Body() body : any,@Req() req : Request) {
+    console.log(body.id);
+    if (!body.id) {
+      throw new BadRequestException('id is required');
+    }
+    return this.sessionService.delete(body.id);
   }
 
   // @Get()
