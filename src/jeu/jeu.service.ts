@@ -1,28 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateJeuDto } from './dto/create-jeu.dto';
-// import { UpdateJeuDto } from './dto/update-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
-import { InfoJeuUnitaireDto } from "./dto/response-catalogue.dto"
+import { InfoJeuUnitaireDto } from './dto/response-catalogue.dto';
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Jeu } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
+import { InfoAchatJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
 
 @Injectable()
 export class JeuService {
-  
-  
-  
   constructor(private readonly prisma: PrismaService) {}
-  
-  // create(createJeuDto: CreateJeuDto) {
-  //   return 'This action adds a new jeu';
-  // }
-  
+
   async findFromPage(pageNumber: number): Promise<CatalogueDto> {
-    const pageSize : number = 20; // Define the page size
-    const offset : number = (pageNumber - 1) * pageSize;
-    
+    const pageSize: number = 20; // Define the page size
+    const offset: number = (pageNumber - 1) * pageSize;
+
     const jeuxUnitaires = await this.prisma.jeuUnitaire.findMany({
       skip: offset,
       take: pageSize,
@@ -33,10 +26,9 @@ export class JeuService {
         vendeur: true,
         jeu: true,
       },
-      
     });
-    
-    const infoJeux: InfoJeuUnitaireDto[] = jeuxUnitaires.map(jeuUnitaire => ({
+
+    const infoJeux: InfoJeuUnitaireDto[] = jeuxUnitaires.map((jeuUnitaire) => ({
       id: jeuUnitaire.idJeuUnitaire,
       nom: jeuUnitaire.jeu.nom,
       description: jeuUnitaire.jeu.description,
@@ -45,13 +37,13 @@ export class JeuService {
       prenomVendeur: jeuUnitaire.vendeur.prenom,
       nomVendeur: jeuUnitaire.vendeur.nom,
       image: this.getStringifiedImage(jeuUnitaire.jeu.idJeu), // Example stringified image
-      etat: jeuUnitaire.etat, // Include the statut property
+      etat: jeuUnitaire.etat, // Include the etat property
     }));
-    
+
     return { jeux: infoJeux };
   }
-  
-  async createJeu(createJeuDto: CreateJeuDto) : Promise<Jeu> {
+
+  async createJeu(createJeuDto: CreateJeuDto): Promise<Jeu> {
     return this.prisma.jeu.create({
       data: {
         nom: createJeuDto.nom,
@@ -60,10 +52,11 @@ export class JeuService {
       },
     });
   }
-  
-  async createJeuUnitaire(createJeuUnitaireDto: CreateJeuUnitaireDto) {
-    const idJeu : number = createJeuUnitaireDto.idJeu;
-    const idVendeur : number = createJeuUnitaireDto.idVendeur;
+
+  async createJeuUnitaire(createJeuUnitaireDto: CreateJeuUnitaireDto): Promise<void> {
+    const idJeu: number = createJeuUnitaireDto.idJeu;
+    const idVendeur: number = createJeuUnitaireDto.idVendeur;
+
     // Check if the Vendeur exists
     const vendeur = await this.prisma.vendeur.findUnique({
       where: { idVendeur },
@@ -80,22 +73,71 @@ export class JeuService {
       throw new NotFoundException(`Aucun jeu avec l'id ${idJeu} n'a été trouvé`);
     }
 
-    return this.prisma.jeuUnitaire.create({
+    await this.prisma.jeuUnitaire.create({
       data: createJeuUnitaireDto,
     });
   }
 
-  
   async getListeJeu(): Promise<InfoJeuDto[]> {
     const jeux = await this.prisma.jeu.findMany();
-    return jeux.map(jeu => ({
+    return jeux.map((jeu) => ({
       idJeu: jeu.idJeu,
       nom: jeu.nom,
       editeur: jeu.editeur,
     }));
   }
+
   getStringifiedImage(idJeu: number): string {
     return 'to complete';
   }
 
+  async vendreJeuUnitaire(idJeuUnitaire: number): Promise<void> {
+    const jeuUnitaire = await this.prisma.jeuUnitaire.findUnique({
+      where: { idJeuUnitaire },
+      include: { vendeur: true },
+    });
+    if (!jeuUnitaire) {
+      throw new NotFoundException(`Aucun JeuUnitaire avec l'id ${idJeuUnitaire} n'a été trouvé`);
+    }
+    if (jeuUnitaire.statut !== 'DISPONIBLE') {
+      throw new BadRequestException("Le JeuUnitaire n'est pas disponible à la vente");
+    }
+
+    await this.prisma.vendeur.update({
+      where: { idVendeur: jeuUnitaire.idVendeur },
+      data: {
+        sommeTotale: { increment: jeuUnitaire.prix },
+        sommeDue: { increment: jeuUnitaire.prix },
+      },
+    });
+
+    await this.prisma.jeuUnitaire.update({
+      where: { idJeuUnitaire },
+      data: {
+        statut: 'VENDU',
+        dateAchat: new Date(),
+      },
+    });
+  }
+
+  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoAchatJeuUnitaireDisponibleDto[]> {
+    const jeuxDisponibles = await this.prisma.jeuUnitaire.findMany({
+      where: { statut: 'DISPONIBLE' },
+      select: {
+        idJeuUnitaire: true,
+        prix: true,
+        jeu: {
+          select: {
+            nom: true,
+          },
+        },
+      },
+    });
+    return jeuxDisponibles.map((jeu) => ({
+      idJeuUnitaire: jeu.idJeuUnitaire,
+      prix: Number(jeu.prix),
+      nom: jeu.jeu.nom,
+    }));
+  }
+ 
 }

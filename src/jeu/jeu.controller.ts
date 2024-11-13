@@ -1,63 +1,60 @@
-import { PositiveIntPipe } from './../pipe/positiveIntPipe';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { PositiveIntPipe } from '../pipe/positiveIntPipe';
+import { Controller, Get, Post, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { JeuService } from './jeu.service';
 import { CreateJeuDto } from './dto/create-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
-import { UpdateJeuDto } from './dto/update-jeu.dto';
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
-import { Jeu } from '@prisma/client';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Role } from '@prisma/client';
+import { InfoJeuDto } from './dto/response-list-jeu.dto';
+import { InfoAchatJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
 
 @Controller('jeu')
-// @Roles([Role.ADMIN,Role.GESTIONNAIRE])
-// @UseGuards(JwtAuthGuard, RolesGuard)
 export class JeuController {
   constructor(private readonly jeuService: JeuService) {}
 
-  // @Post()
-  // create(@Body() createJeuDto: CreateJeuDto) {
-  //   return this.jeuService.create(createJeuDto);
-  // }
-
   @Get('catalogue/:pageNumber')
-  findFromPage(@Param('pageNumber', ParseIntPipe, PositiveIntPipe) pageNumber: string, ) : Promise<CatalogueDto> {
+  async findFromPage(
+    @Param('pageNumber', ParseIntPipe, PositiveIntPipe) pageNumber: string,
+  ): Promise<CatalogueDto> {
     const pageNumberAsNumber = Number(pageNumber);
     return this.jeuService.findFromPage(pageNumberAsNumber);
   }
 
   @Post('creerJeu')
-  createJeu(@Body() createJeuDto: CreateJeuDto) {
-    return this.jeuService.createJeu(createJeuDto);
-  }
-  @Roles([Role.ADMIN,Role.GESTIONNAIRE])
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('creerJeuUnitaire')
-  createJeuUnitaire(@Body() createJeuUnitaireDto: CreateJeuUnitaireDto) {
-    return this.jeuService.createJeuUnitaire(createJeuUnitaireDto);
+  async createJeu(@Body() createJeuDto: CreateJeuDto): Promise<void> {
+    await this.jeuService.createJeu(createJeuDto);
   }
 
-  @Roles([Role.ADMIN,Role.GESTIONNAIRE])
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('creerJeuUnitaire')
+  async createJeuUnitaire(@Body() createJeuUnitaireDto: CreateJeuUnitaireDto): Promise<void> {
+    await this.jeuService.createJeuUnitaire(createJeuUnitaireDto);
+  }
+
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('listeJeu')
-  getListeJeu(){
+  async getListeJeu(): Promise<InfoJeuDto[]> {
     return this.jeuService.getListeJeu();
   }
 
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.jeuService.findOne(+id);
-//   }
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('achat/:idJeuUnitaire')
+  async vendreJeuUnitaire(
+    @Param('idJeuUnitaire', ParseIntPipe) idJeuUnitaire: number,
+  ): Promise<void> {
+    await this.jeuService.vendreJeuUnitaire(idJeuUnitaire);
+  }
 
-//   @Patch(':id')
-//   update(@Param('id') id: string, @Body() updateJeuDto: UpdateJeuDto) {
-//     return this.jeuService.update(+id, updateJeuDto);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.jeuService.remove(+id);
-//   }
+  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('listInfoAchatJeuUnitaireDisponible')
+  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoAchatJeuUnitaireDisponibleDto[]> {
+    return this.jeuService.getListInfoAchatJeuUnitaireDisponible();
+  }
 }
