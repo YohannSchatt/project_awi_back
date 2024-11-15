@@ -29,7 +29,7 @@ export class VendeurController {
     return this.vendeurService.updateVendeur(updateVendeurDto);
   }
 
-  @Post('getListVendeur')
+  @Get('getListVendeur')
   getListVendeur(@Body() searchVendeurDto : SearchVendeurDto): Promise<Vendeur[]> {
     return this.vendeurService.getListVendeur(searchVendeurDto.nom, searchVendeurDto.prenom, searchVendeurDto.email, searchVendeurDto.numero);
   }
