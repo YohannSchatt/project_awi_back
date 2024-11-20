@@ -78,6 +78,7 @@ model Session {
   dateDebut    DateTime
   dateFin      DateTime
   description  String
+  comission    Decimal  @db.Decimal(10, 2)
   participations ParticipationSession[]
 }
 

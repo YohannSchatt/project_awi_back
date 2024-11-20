@@ -10,7 +10,7 @@ export class SessionService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createSessionDto: CreateSessionDto) {
-    const { titre, lieu, dateDebut, dateFin, description } = createSessionDto;
+    const { titre, lieu, dateDebut, dateFin, description, comission } = createSessionDto;
 
     // Convert string dates to Date objects
     const dateDebutObj = new Date(dateDebut);
@@ -29,6 +29,7 @@ export class SessionService {
         dateDebut: dateDebutObj,
         dateFin: dateFinObj,
         description: description,
+        comission: comission,
       },
     });
 
@@ -36,7 +37,7 @@ export class SessionService {
   }
 
   async update(updateSessionDto: UpdateSessionDto) {
-    const { id, titre, lieu, dateDebut, dateFin, description } = updateSessionDto;
+    const { id, titre, lieu, dateDebut, dateFin, description, comission } = updateSessionDto;
 
     const data: any = {};
 
@@ -59,6 +60,7 @@ export class SessionService {
     if (titre !== undefined) data.titre = titre;
     if (lieu !== undefined) data.lieu = lieu;
     if (description !== undefined) data.description = description;
+    if (description !== undefined) data.comission = comission;
 
     // Update the session in the database
     const session = await this.prisma.session.update({

@@ -36,6 +36,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         dateDebut: currentDate,
         dateFin: dateInFiftyDays,
         description: 'Session Test : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
+        comission: 10.02,
       },
       {
         titre: 'Session Test 2',
@@ -43,6 +44,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         dateDebut: currentDateOneYearLater,
         dateFin: dateInFiftyDaysOneYearLater,
         description: 'Session Test 2 : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
+        comission: 5,
       }],
     });
     console.log('Database has been filled with initial data for session.');
