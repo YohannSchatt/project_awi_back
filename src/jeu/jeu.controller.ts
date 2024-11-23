@@ -7,9 +7,9 @@ import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Role } from '@prisma/client';
+import { JeuUnitaire, Role } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
-import { InfoAchatJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
+import { InfoJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
 
 @Controller('jeu')
 export class JeuController {
@@ -22,6 +22,14 @@ export class JeuController {
     const pageNumberAsNumber = Number(pageNumber);
     return this.jeuService.findFromPage(pageNumberAsNumber);
   }
+
+  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('jeuxDisponibleByVendeur/:idVendeur')
+  async getJeuxDispoibleByVendeur(@Param('idVendeur' , ParseIntPipe) idVendeur: number): Promise<InfoJeuUnitaireDisponibleDto[]> {
+    return this.jeuService.getJeuxDisponibleByVendeur(Number(idVendeur));
+  }
+
 
   @Post('creerJeu')
   async createJeu(@Body() createJeuDto: CreateJeuDto): Promise<void> {
@@ -54,7 +62,7 @@ export class JeuController {
   // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('listInfoAchatJeuUnitaireDisponible')
-  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoAchatJeuUnitaireDisponibleDto[]> {
+  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoJeuUnitaireDisponibleDto[]> {
     return this.jeuService.getListInfoAchatJeuUnitaireDisponible();
   }
 }

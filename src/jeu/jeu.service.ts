@@ -4,9 +4,9 @@ import { CreateJeuDto } from './dto/create-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
 import { InfoJeuUnitaireDto } from './dto/response-catalogue.dto';
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
-import { Jeu } from '@prisma/client';
+import { Jeu, JeuUnitaire } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
-import { InfoAchatJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
+import { InfoJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
 
 @Injectable()
 export class JeuService {
@@ -120,7 +120,7 @@ export class JeuService {
     });
   }
 
-  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoAchatJeuUnitaireDisponibleDto[]> {
+  async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoJeuUnitaireDisponibleDto[]> {
     const jeuxDisponibles = await this.prisma.jeuUnitaire.findMany({
       where: { statut: 'DISPONIBLE' },
       select: {
@@ -133,6 +133,43 @@ export class JeuService {
         },
       },
     });
+    return jeuxDisponibles.map((jeu) => ({
+      idJeuUnitaire: jeu.idJeuUnitaire,
+      prix: Number(jeu.prix),
+      nom: jeu.jeu.nom,
+    }));
+  }
+  
+
+
+  async getJeuxDisponibleByVendeur(idVendeur: number): Promise<InfoJeuUnitaireDisponibleDto[]> {
+    // Verify that the vendeur exists
+    const vendeur = await this.prisma.vendeur.findUnique({
+      where: { idVendeur },
+    });
+
+    if (!vendeur) {
+      throw new NotFoundException(`Aucun vendeur avec l'id ${idVendeur} n'a été trouvé`);
+    }
+
+    // Fetch the JeuUnitaires with status 'DISPONIBLE' or 'DEPOSE' for the given vendeur
+    const jeuxDisponibles = await this.prisma.jeuUnitaire.findMany({
+      where: {
+        idVendeur,
+        statut: { in: ['DISPONIBLE', 'DEPOSE'] },
+      },
+      select: {
+        idJeuUnitaire: true,
+        prix: true,
+        jeu: {
+          select: {
+            nom: true,
+          },
+        },
+      },
+    });
+
+    // Map the results to InfoJeuUnitaireDisponibleDto
     return jeuxDisponibles.map((jeu) => ({
       idJeuUnitaire: jeu.idJeuUnitaire,
       prix: Number(jeu.prix),

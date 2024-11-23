@@ -1,4 +1,4 @@
-export class InfoAchatJeuUnitaireDisponibleDto {
+export class InfoJeuUnitaireDisponibleDto {
   idJeuUnitaire: number;
   prix: number;
   nom: string;
