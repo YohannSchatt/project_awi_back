@@ -141,6 +141,10 @@ async  enregistrerRetraitJeu(enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto)
     });
   }
 
+  async getListAllVendeur (): Promise<Vendeur[]> {
+    return this.prisma.vendeur.findMany();
+  }
+
   async updateVendeurParticipation(idVendeur: number): Promise<Vendeur> {
     const vendeur = await this.prisma.vendeur.findUnique({ where: { idVendeur: Number(idVendeur) } });
     if (!vendeur) {

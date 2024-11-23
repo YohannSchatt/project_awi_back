@@ -40,10 +40,12 @@ export class VendeurController {
     this.vendeurService.enregistrerRetraitArgent(enregistrerRetraitArgentDto);
   }
 
-  
+  @Get('getListAllVendeur')
+  getListAllVendeur(): Promise<Vendeur[]> {
+    return this.vendeurService.getListAllVendeur();
+  }
 
-
-  @Get('getListVendeur')
+  @Post('getListVendeur')
   getListVendeur(@Body() searchVendeurDto : SearchVendeurDto): Promise<Vendeur[]> {
     return this.vendeurService.getListVendeur(searchVendeurDto.nom, searchVendeurDto.prenom, searchVendeurDto.email, searchVendeurDto.numero);
   }
