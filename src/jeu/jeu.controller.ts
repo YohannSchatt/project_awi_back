@@ -23,8 +23,8 @@ export class JeuController {
     return this.jeuService.findFromPage(pageNumberAsNumber);
   }
 
-  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('jeuxDisponibleByVendeur/:idVendeur')
   async getJeuxDispoibleByVendeur(@Param('idVendeur' , ParseIntPipe) idVendeur: number): Promise<InfoJeuUnitaireDisponibleDto[]> {
     return this.jeuService.getJeuxDisponibleByVendeur(Number(idVendeur));
