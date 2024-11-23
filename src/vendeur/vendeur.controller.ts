@@ -10,7 +10,9 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { SearchVendeurDto } from './dto/search-vendeur.dto';
 import { UpdateVendeurDto } from './dto/update-vendeur.dto';
-import { Request } from 'express';
+// import { Request } from 'express';
+import { EnregistrerRetraitJeuDto } from './dto/enregistrer-retrait-jeu.dto';
+
 
 @Roles([Role.ADMIN,Role.GESTIONNAIRE])
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -25,9 +27,21 @@ export class VendeurController {
 
   @Post('updateVendeur')
   updateVendeur(@Body() updateVendeurDto: UpdateVendeurDto): Promise<Vendeur> {
-    console.log(updateVendeurDto);
     return this.vendeurService.updateVendeur(updateVendeurDto);
   }
+
+  @Post('enregistrerRetraitJeu')
+  enregistrerRetraitJeu(@Body() enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto) {
+    this.vendeurService.enregistrerRetraitJeu(enregistrerRetraitJeuDto);
+  }
+
+  @Post('enregistrerRetraitArgent')
+  enregistrerRetraitArgent(@Body() enregistrerRetraitArgentDto) {
+    this.vendeurService.enregistrerRetraitArgent(enregistrerRetraitArgentDto);
+  }
+
+  
+
 
   @Get('getListVendeur')
   getListVendeur(@Body() searchVendeurDto : SearchVendeurDto): Promise<Vendeur[]> {
