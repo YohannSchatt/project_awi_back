@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail, IsOptional } from 'class-validator';
+import {  IsString, IsEmail, IsOptional } from 'class-validator';
 
 export class SearchVendeurDto {
 
@@ -11,7 +11,7 @@ export class SearchVendeurDto {
   nom: string;
 
   @IsOptional()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @IsOptional()
