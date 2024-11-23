@@ -9,7 +9,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { JeuUnitaire, Role } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
-import { InfoJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
+import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
 
 @Controller('jeu')
 export class JeuController {

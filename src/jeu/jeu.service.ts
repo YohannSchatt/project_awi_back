@@ -6,7 +6,7 @@ import { InfoJeuUnitaireDto } from './dto/response-catalogue.dto';
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Jeu, JeuUnitaire } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
-import { InfoJeuUnitaireDisponibleDto } from './dto/info-achat-jeu-unitaire-disponible.dto';
+import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
 
 @Injectable()
 export class JeuService {
