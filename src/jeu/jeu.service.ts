@@ -140,6 +140,60 @@ export class JeuService {
     }));
   }
   
+  async enregistrerAchat(idsJeuUnitaire: number[]): Promise<void> {
+    // Fetch all JeuUnitaire records with the provided IDs, including their vendeur
+    const jeuxUnitaires = await this.prisma.jeuUnitaire.findMany({
+      where: { idJeuUnitaire: { in: idsJeuUnitaire } },
+      include: { vendeur: true },
+    });
+  
+    // Check if all IDs were found
+    if (jeuxUnitaires.length !== idsJeuUnitaire.length) {
+      throw new NotFoundException(`Certains JeuUnitaires n'ont pas été trouvés`);
+    }
+  
+    // Check if all JeuUnitaires are available
+    const unavailableJeux = jeuxUnitaires.filter((jeu) => jeu.statut !== 'DISPONIBLE');
+    if (unavailableJeux.length > 0) {
+      throw new BadRequestException('Certains JeuUnitaires ne sont pas disponibles à la vente');
+    }
+  
+    // Extract unique vendeur IDs from the jeuxUnitaires
+    const vendeurIds = [...new Set(jeuxUnitaires.map((jeu) => jeu.idVendeur))];
+  
+    // Check that all vendeurs exist
+    const vendeurs = await this.prisma.vendeur.findMany({
+      where: { idVendeur: { in: vendeurIds } },
+    });
+  
+    if (vendeurs.length !== vendeurIds.length) {
+      throw new NotFoundException(`Certains vendeurs n'existent pas`);
+    }
+  
+    // Perform updates in a transaction
+    await this.prisma.$transaction(async (prisma) => {
+      // Loop over each jeuUnitaire
+      for (const jeuUnitaire of jeuxUnitaires) {
+        // Update the vendeur's sommeTotale and sommeDue
+        await prisma.vendeur.update({
+          where: { idVendeur: jeuUnitaire.idVendeur },
+          data: {
+            sommeTotale: { increment: jeuUnitaire.prix },
+            sommeDue: { increment: jeuUnitaire.prix },
+          },
+        });
+  
+        // Update the jeuUnitaire's statut and dateAchat
+        await prisma.jeuUnitaire.update({
+          where: { idJeuUnitaire: jeuUnitaire.idJeuUnitaire },
+          data: {
+            statut: 'VENDU',
+            dateAchat: new Date(),
+          },
+        });
+      }
+    });
+  }
 
 
   async getJeuxDisponibleByVendeur(idVendeur: number): Promise<InfoJeuUnitaireDisponibleDto[]> {

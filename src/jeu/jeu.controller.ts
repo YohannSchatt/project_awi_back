@@ -1,5 +1,5 @@
 import { PositiveIntPipe } from '../pipe/positiveIntPipe';
-import { Controller, Get, Post, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe, UseGuards, ParseArrayPipe } from '@nestjs/common';
 import { JeuService } from './jeu.service';
 import { CreateJeuDto } from './dto/create-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
@@ -52,11 +52,11 @@ export class JeuController {
 
   @Roles([Role.ADMIN, Role.GESTIONNAIRE])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('achat/:idJeuUnitaire')
+  @Post('achat')
   async vendreJeuUnitaire(
-    @Param('idJeuUnitaire', ParseIntPipe) idJeuUnitaire: number,
+    @Body('idsJeuUnitaire', new ParseArrayPipe({ items: Number })) idsJeuUnitaire: number[],
   ): Promise<void> {
-    await this.jeuService.vendreJeuUnitaire(idJeuUnitaire);
+    await this.jeuService.enregistrerAchat(idsJeuUnitaire);
   }
 
   // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
