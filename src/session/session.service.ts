@@ -4,6 +4,7 @@ import { ParticipationSession } from '@prisma/client';
 import { SessionDto } from './dto/response-session.dto';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { SearchSessionDto } from './dto/search-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -182,6 +183,38 @@ export class SessionService {
       },
     });
     return !overlappingSession;
+  }
+
+  getListSession(body: SearchSessionDto) {
+    const { titre, lieu, dateDebut, dateFin } = body;
+    var Debut = new Date();
+    if (dateDebut !== undefined) {
+      console.log(dateDebut);
+      const [yearBegin, monthBegin, dayBegin] = dateDebut.split('-').map(Number);
+      Debut = new Date(Date.UTC(yearBegin, monthBegin - 1, dayBegin)); // Utilisation de Date.UTC
+      console.log(Debut);
+    } else {
+      Debut = new Date();
+    }
+    var Fin = new Date();
+    if (dateFin !== undefined) {
+      console.log(dateFin);
+      const [yearEnd, monthEnd, dayEnd] = dateFin.split('-').map(Number);
+      Fin = new Date(Date.UTC(yearEnd, monthEnd - 1, dayEnd)); // Utilisation de Date.UTC
+      console.log(Fin);
+    } else {
+      Fin = new Date();
+    }
+    return this.prisma.session.findMany({
+      where: {
+        AND: [
+          titre ? { titre: { contains: titre, mode: 'insensitive' } } : {},
+          lieu ? { lieu: { contains: lieu, mode: 'insensitive' } } : {},
+          dateDebut ? { dateDebut: Debut} : {},
+          dateFin ? { dateFin : Fin } : {},
+        ],
+      },
+    });
   }
 
   private formatDate(date: Date): string {

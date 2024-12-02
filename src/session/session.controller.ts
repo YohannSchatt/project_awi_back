@@ -57,6 +57,14 @@ export class SessionController {
     return this.sessionService.delete(body.id);
   }
 
+  @Post('GetListSession')
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles([Role.ADMIN,Role.GESTIONNAIRE])
+  getListSession(@Body() body : any) {
+    console.log(body);
+    return this.sessionService.getListSession(body);
+  }
+
   // @Get()
   // findAll() {
   //   return this.sessionService.findAll();
