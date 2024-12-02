@@ -24,25 +24,21 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       console.log('Database already contains sessions. Skipped filling.');
       return;
     }
-    const currentDate = new Date();
-    const dateInFiftyDays = new Date(currentDate.getTime() + 50 * 24 * 60 * 60 * 1000);
-    const currentDateOneYearLater = new Date(currentDate.getTime() + 365 * 24 * 60 * 60 * 1000);
-    const dateInFiftyDaysOneYearLater = new Date(dateInFiftyDays.getTime() + 365 * 24 * 60 * 60 * 1000);
     await this.session.createMany({
       data: [
       {
         titre : 'FioFio',
         lieu : 'Paris',
-        dateDebut: currentDate,
-        dateFin: dateInFiftyDays,
+        dateDebut: new Date(Date.UTC(2024, 11, 1)),
+        dateFin: new Date(Date.UTC(2024, 11, 31)),
         description: 'Session Test : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
         comission: 10.02,
       },
       {
         titre: 'Session Test 2',
         lieu : 'Montpellier',
-        dateDebut: currentDateOneYearLater,
-        dateFin: dateInFiftyDaysOneYearLater,
+        dateDebut: new Date(Date.UTC(2025, 1, 5)),
+        dateFin: new Date (Date.UTC(2025, 1, 12)),
         description: 'Session Test 2 : le festival de FioFio, qui finit dans 50 jours (à partir du premier remplissage de la base de données)',
         comission: 5,
       }],
