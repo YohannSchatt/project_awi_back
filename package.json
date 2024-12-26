@@ -5,10 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npx nest start",
+    "start": "nest start",
     "start:dev": "npx nest start --watch",
     "start:debug": "npx nest start --debug --watch",
     "start:prod": "node dist/main",
