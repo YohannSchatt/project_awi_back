@@ -19,6 +19,8 @@ RUN chmod +x migrate.sh
 COPY .dokku /app/.dokku
 RUN chmod +x /app/.dokku/post-deploy
 
+RUN chmod +x start.sh
+
 EXPOSE 3012
 
 CMD ["./start.sh"]
