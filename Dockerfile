@@ -21,4 +21,4 @@ RUN chmod +x /app/.dokku/post-deploy
 
 EXPOSE 3012
 
-CMD ["npm", "run", "start:prod"]
+CMD ["./start.sh"]
