@@ -5,15 +5,19 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-ENV DATABASE_URL=postgres://postgres:8de7d907a7a69c01c0879e8625d1f440@dokku-postgres-DBjeutaro:5432/DBjeutaro
-
 RUN npm install --verbose
-
-RUN npx prisma migrate deploy
 
 COPY . .
 
 RUN npm run build
+
+# Copier le script de migration
+COPY migrate.sh .
+RUN chmod +x migrate.sh
+
+# Copier le hook de déploiement Dokku
+COPY .dokku /app/.dokku
+RUN chmod +x /app/.dokku/post-deploy
 
 EXPOSE 3012
 
