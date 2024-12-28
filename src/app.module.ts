@@ -20,6 +20,7 @@ import * as cookieParser from 'cookie-parser';
 import { PrismaModule } from './prisma/prisma.module';
 import { SessionModule } from './session/session.module';
 import { VendeurModule } from './vendeur/vendeur.module';
+import { InvoiceModule } from './invoice/invoice.module';
 @Module({
 
   imports: [ConfigModule.forRoot({
@@ -31,7 +32,7 @@ import { VendeurModule } from './vendeur/vendeur.module';
     AdminModule, 
     GestionnaireModule,
     JeuModule,
-    UserModule, VendeurModule, PrismaModule, SessionModule
+    UserModule, VendeurModule, PrismaModule, SessionModule, InvoiceModule
   ],
   controllers: [AppController],
   providers: [AppService, /*AdminService, GestionnaireService, PrismaService, UserService*/],
