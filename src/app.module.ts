@@ -8,13 +8,16 @@ import { AdminService } from './admin/admin.service';
 import { AdminModule } from './admin/admin.module';
 import { GestionnaireService } from './gestionnaire/gestionnaire.service';
 import { GestionnaireModule } from './gestionnaire/gestionnaire.module';
+import { EmailModule } from './email/email.module';
+import { PDFModule } from './pdf/pdf.module';
+
 import configuration from './configuration';
 
 import { JeuModule } from './jeu/jeu.module';
 import { UserService } from './user/user.service';
 import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
-import { EmailService } from './email/email/email.service';
+import { EmailService } from './email/email.service';
 import * as cookieParser from 'cookie-parser';
 // The AppModule is the root module of the application.import { VendeurModule } from './vendeur/vendeur.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -32,7 +35,13 @@ import { InvoiceModule } from './invoice/invoice.module';
     AdminModule, 
     GestionnaireModule,
     JeuModule,
-    UserModule, VendeurModule, PrismaModule, SessionModule, InvoiceModule
+    UserModule, 
+    VendeurModule, 
+    PrismaModule, 
+    SessionModule, 
+    InvoiceModule,         
+    EmailModule,
+    PDFModule,
   ],
   controllers: [AppController],
   providers: [AppService, /*AdminService, GestionnaireService, PrismaService, UserService*/],

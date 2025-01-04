@@ -9,24 +9,9 @@ import { InvoiceDto } from './dto/invoice.dto';
 export class PDFService {
 
     constructor(private configService: ConfigService) {}
-    
-    async generatePDF(): Promise<Buffer> {
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage([600, 400]);
-        const { width, height } = page.getSize();
-        const fontSize = 30;
-        page.drawText('Hello, world!', {
-            x: 50,
-            y: height - 4 * fontSize,
-            size: fontSize,
-            color: rgb(0, 0.53, 0.71),
-        });
-
-        const pdfBytes = await pdfDoc.save();
-        return Buffer.from(pdfBytes);
-    }
 
     async generateInvoicePDF(invoiceData: InvoiceDto): Promise<Buffer> {
+        console.log(invoiceData);
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage([600, 800]);
         const { width, height } = page.getSize();
@@ -71,14 +56,14 @@ export class PDFService {
         });
 
         page.drawText('Etat', {
-            x: 200,
+            x: 300,
             y: height - 160,
             size: fontSize,
             color: rgb(0, 0, 0),
         });
 
         page.drawText('Prix', {
-            x: 300,
+            x: 400,
             y: height - 160,
             size: fontSize,
             color: rgb(0, 0, 0),
@@ -133,17 +118,26 @@ export class PDFService {
         });
 
         const pdfBytes = await pdfDoc.save();
+        const pathFileName : string = 'src/pdf/invoice/' + invoiceData.email + "_" + this.getDateForInvoice(new Date(invoiceData.date)) + '.pdf';
+        this.saveInvoicePDF(pathFileName, pdfBytes);
         return Buffer.from(pdfBytes);
     }
 
-    async savePDF(filePath: string): Promise<void> {
-        const pdfBuffer = await this.generatePDF();
+    async saveInvoicePDF(filePath: string, pdfBuffer : Uint8Array): Promise<void> {
         fs.writeFileSync(filePath, pdfBuffer);
     }
 
-    async saveInvoicePDF(filePath: string): Promise<void> {
-        const pdfBuffer = await this.generateInvoicePDF();
-        fs.writeFileSync(filePath, pdfBuffer);
+    async pdfFinder(filePath: string): Promise<Buffer> {
+        return fs.readFileSync(filePath);
     }
 
+    getDateForInvoice(date: Date): string {
+        console.log(date);
+        return date.getFullYear().toString() + '-' +
+               (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+               date.getDate().toString().padStart(2, '0') + ' ' +
+               date.getHours().toString().padStart(2, '0') + '-' +
+               date.getMinutes().toString().padStart(2, '0') + '-' +
+               date.getSeconds().toString().padStart(2, '0');
+    }
 }

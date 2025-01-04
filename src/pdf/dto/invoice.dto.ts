@@ -15,6 +15,10 @@ export class InvoiceDto {
 }
 
 export class ItemDto {
+
+    @IsNotEmpty()
+    idJeuUnitaire: number;
+
     @IsNotEmpty()
     nom: string;
 
