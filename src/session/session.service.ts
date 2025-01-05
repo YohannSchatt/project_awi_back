@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ParticipationSession } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+// import { ParticipationSession } from '@prisma/client';
 import { SessionDto } from './dto/response-session.dto';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
@@ -237,25 +237,25 @@ export class SessionService {
 
   } 
 
-  async ajouterParticipationSessionCourrante(idVendeur: number): Promise<ParticipationSession> {
-    const session = await this.currentSession();
-    if (!session) {
-      throw new NotFoundException("Il n'y a pas de session en cours");
-    }
-    const idSession: number = session.idSession;
-    try {
-      const res = await this.prisma.participationSession.create({
-        data: {
-          idVendeur: Number(idVendeur),
-          idSession: idSession,
-        },
-      });
-      return res;
-    } catch (error) {
-      if (error.code === 'P2002') { // Prisma unique constraint error code
-        throw new NotFoundException("Impossible d'ajouter le vendeur à la session courante, il est possible qu'il soit déjà inscrit");
-      }
-      throw new Error("Une erreur est survenue lors de l'ajout du vendeur à la session courante");
-    }
-  }
+  // async ajouterParticipationSessionCourrante(idVendeur: number): Promise<ParticipationSession> {
+  //   const session = await this.currentSession();
+  //   if (!session) {
+  //     throw new NotFoundException("Il n'y a pas de session en cours");
+  //   }
+  //   const idSession: number = session.idSession;
+  //   try {
+  //     const res = await this.prisma.participationSession.create({
+  //       data: {
+  //         idVendeur: Number(idVendeur),
+  //         idSession: idSession,
+  //       },
+  //     });
+  //     return res;
+  //   } catch (error) {
+  //     if (error.code === 'P2002') { // Prisma unique constraint error code
+  //       throw new NotFoundException("Impossible d'ajouter le vendeur à la session courante, il est possible qu'il soit déjà inscrit");
+  //     }
+  //     throw new Error("Une erreur est survenue lors de l'ajout du vendeur à la session courante");
+  //   }
+  // }
 }

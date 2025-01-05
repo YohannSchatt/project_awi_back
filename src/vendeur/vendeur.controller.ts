@@ -1,5 +1,5 @@
 import { Controller, Post, Body , Get, Patch, Res,Param, ParseIntPipe, Search, Req, BadRequestException } from '@nestjs/common';
-import { PositiveIntPipe } from 'src/pipe/positiveIntPipe';
+import { PositiveIntPipe } from '../pipe/positiveIntPipe';
 import { VendeurService } from './vendeur.service';
 import { CreateVendeurDto } from './dto/create-vendeur.dto';
 import { Vendeur } from '@prisma/client';

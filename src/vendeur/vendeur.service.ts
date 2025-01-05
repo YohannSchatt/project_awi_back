@@ -47,12 +47,13 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
     }
   }
 
-  // Update the jeu's status to RECUPERER
+  //Update the jeu's status to RECUPERER
   await this.prisma.jeuUnitaire.updateMany({
     where: { idJeuUnitaire: {in : idJeu} },
     data: { statut: Statut.RECUPERER }
     });
   }
+
   async enregistrerRetraitArgent(idVendeur: number) { 
   
     const vendeur = await this.prisma.vendeur.findUnique({
@@ -106,9 +107,9 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
       },
     });
     
-    if(await this.sessionService.currentSessionExist()){
-      await this.sessionService.ajouterParticipationSessionCourrante(newVendeur.idVendeur);
-    }
+    // if(await this.sessionService.currentSessionExist()){
+    //   await this.sessionService.ajouterParticipationSessionCourrante(newVendeur.idVendeur);
+    // }
 
     return newVendeur;
   }
@@ -153,9 +154,9 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
       throw new NotFoundException("Vendeur non trouvé");
     }
 
-    if (await this.sessionService.currentSessionExist()) {
-      await this.sessionService.ajouterParticipationSessionCourrante(idVendeur);
-    }
+    // if (await this.sessionService.currentSessionExist()) {
+    //   await this.sessionService.ajouterParticipationSessionCourrante(idVendeur);
+    // }
 
     return vendeur;
   }
