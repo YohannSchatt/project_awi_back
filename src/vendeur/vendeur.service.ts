@@ -8,6 +8,7 @@ import { Vendeur } from '@prisma/client';
 import { EnregistrerRetraitJeuDto } from './dto/enregistrer-retrait-jeu.dto';
 import { EnregistrerRetraitArgentDto } from './dto/enregistrer-retrait-argent.dto';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Statut } from '@prisma/client';
 
 
 
@@ -18,10 +19,7 @@ export class VendeurService {
   constructor(private readonly prisma: PrismaService, private readonly sessionService : SessionService) {}
 
 
-async  enregistrerRetraitJeu(enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto) {
-  // Check if the vendeur exists
-  const idVendeur = enregistrerRetraitJeuDto.idVendeur;
-  const idJeu = enregistrerRetraitJeuDto.idJeu;
+async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
 
   const vendeur = await this.prisma.vendeur.findUnique({
     where: { idVendeur: idVendeur }
@@ -32,34 +30,30 @@ async  enregistrerRetraitJeu(enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto)
   }
 
   // Check if the jeu exists and its status is either DISPONIBLE or DEPOSE
-  const jeuUnitaire = await this.prisma.jeuUnitaire.findUnique({
-    where: { idJeuUnitaire: idJeu }
+  const jeuUnitaire = await this.prisma.jeuUnitaire.findMany({
+    where: { idJeuUnitaire: { in: idJeu } }
   });
 
-  if (!jeuUnitaire) {
+  if (jeuUnitaire.length <= 0 && jeuUnitaire.length !== idJeu.length) {
     throw new NotFoundException('Jeu non trouvé');
   }
 
-  if (jeuUnitaire.statut !== 'DISPONIBLE' && jeuUnitaire.statut !== 'DEPOSE') {
-    throw new BadRequestException('Le statut du jeu nest pas DISPONIBLE ou DEPOSE');
-  }
-
-  // Check if the jeu's idVendeur matches the idVendeur received
-  if (jeuUnitaire.idVendeur !== idVendeur) {
-    throw new BadRequestException('Le jeu ne correspond pas au vendeur');
+  for (let i = 0; i < jeuUnitaire.length; i++) {
+    if (jeuUnitaire[i].statut !== Statut.DISPONIBLE  && jeuUnitaire[i].statut !== Statut.DEPOSE) {
+      throw new BadRequestException('Le statut du jeu nest pas DISPONIBLE ou DEPOSE');
+    }
+    if (jeuUnitaire[i].idVendeur !== idVendeur) {
+      throw new BadRequestException('Le jeu ne correspond pas au vendeur');
+    }
   }
 
   // Update the jeu's status to RECUPERER
-  await this.prisma.jeuUnitaire.update({
-    where: { idJeuUnitaire: idJeu },
-    data: { statut: 'RECUPERER' }
+  await this.prisma.jeuUnitaire.updateMany({
+    where: { idJeuUnitaire: {in : idJeu} },
+    data: { statut: Statut.RECUPERER }
     });
-
   }
-  async enregistrerRetraitArgent(enregistrerRetraitArgentDto: EnregistrerRetraitArgentDto)  {
-    // Check if the vendeur exists
-    const idVendeur = enregistrerRetraitArgentDto.idVendeur;
-    const montant : Decimal = new Decimal(enregistrerRetraitArgentDto.montant);
+  async enregistrerRetraitArgent(idVendeur: number) { 
   
     const vendeur = await this.prisma.vendeur.findUnique({
       where: { idVendeur: idVendeur }
@@ -69,25 +63,33 @@ async  enregistrerRetraitJeu(enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto)
       throw new NotFoundException('Vendeur non trouvé');
     }
   
-    // Check if the vendeur has enough money
-    if (vendeur.sommeDue < montant) {
-      throw new BadRequestException('Le solde du vendeur est insuffisant');
-    }
-  
     // Update the vendeur's solde
     await this.prisma.vendeur.update({
       where: { idVendeur: idVendeur },
-      data: { sommeDue: new Decimal(vendeur.sommeDue).minus(montant),
-              sommeRetire: new Decimal(vendeur.sommeRetire).plus(montant) }
+      data: { sommeDue: 0,
+              sommeRetire: new Decimal(vendeur.sommeRetire).plus(vendeur.sommeDue)
+            }
     });
 
     await this.prisma.retrait.create({
       data: {
-        somme: montant,
+        somme: vendeur.sommeDue,
         idVendeur: idVendeur,
         date: new Date(),
       },
     });
+  }
+
+  async getArgentVendeur(idVendeur: number): Promise<number> {
+    const vendeur = await this.prisma.vendeur.findUnique({
+      where: { idVendeur: idVendeur }
+    });
+
+    if (!vendeur) {
+      throw new NotFoundException('Vendeur non trouvé');
+    }
+
+    return Number(vendeur.sommeDue);
   }
 
   async createVendeur(createVendeurDto: CreateVendeurDto): Promise<Vendeur> {
