@@ -48,10 +48,12 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
   }
 
   //Update the jeu's status to RECUPERER
-  await this.prisma.jeuUnitaire.updateMany({
+  const jeuUpdate = await this.prisma.jeuUnitaire.updateMany({
     where: { idJeuUnitaire: {in : idJeu} },
     data: { statut: Statut.RECUPERER }
     });
+
+    return jeuUpdate;
   }
 
   async enregistrerRetraitArgent(idVendeur: number) { 
@@ -65,11 +67,12 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
     }
   
     // Update the vendeur's solde
-    await this.prisma.vendeur.update({
+    const updateVendeur = await this.prisma.vendeur.update({
       where: { idVendeur: idVendeur },
-      data: { sommeDue: 0,
-              sommeRetire: new Decimal(vendeur.sommeRetire).plus(vendeur.sommeDue)
-            }
+      data: { 
+        sommeDue: 0,
+        sommeRetire: new Decimal(vendeur.sommeRetire).plus(vendeur.sommeDue)
+      }
     });
 
     await this.prisma.retrait.create({
@@ -79,6 +82,8 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
         date: new Date(),
       },
     });
+
+    return updateVendeur;
   }
 
   async getArgentVendeur(idVendeur: number): Promise<number> {
@@ -120,7 +125,7 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
       throw new NotFoundException("Vendeur non trouvé");
     }
 
-    return await this.prisma.vendeur.update({
+    const updateVendeur = await this.prisma.vendeur.update({
       where: { idVendeur: Number(updateVendeurDto.idVendeur) },
       data: {
         prenom: updateVendeurDto.prenom,
@@ -129,6 +134,8 @@ async  enregistrerRetraitJeu(idVendeur: number, idJeu: number[]) {
         numero: updateVendeurDto.numero,
       },
     });
+
+    return updateVendeur
   }
 
   async getListVendeur(nom : string, prenom : string, email : string, numero : string): Promise<Vendeur[]> {
