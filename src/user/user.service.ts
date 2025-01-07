@@ -5,7 +5,7 @@ import { GetPayloadDto } from './dto/get-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserInfoDto } from './dto/update-user-info.dto';
-import { Role } from 'src/common/enums/role.enum';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -45,6 +45,8 @@ export class UserService {
     if (!user) {
         throw new BadRequestException('User not created');
     }
+
+    return user
   }
 
   async validateUser(email : string,password : string): Promise<GetPayloadDto> {
@@ -81,7 +83,7 @@ export class UserService {
       throw new BadRequestException('Missing data');
     }
 
-    await this.prisma.utilisateur.update({
+    const userUpdate = await this.prisma.utilisateur.update({
       where: { idUtilisateur: id },
       data: { prenom: data.prenom, nom: data.nom, email: data.email },
     });
@@ -122,7 +124,7 @@ export class UserService {
 
   async getGestionnaire() {
     const user = await this.prisma.utilisateur.findMany({
-      where: { role: Role.Gestionnaire}
+      where: { role: Role.Gestionnaire }
     })
     return user
   }

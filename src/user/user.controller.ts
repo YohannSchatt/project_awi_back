@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UserService } from './user.service';
 import { GetUserDto } from './dto/get-user.dto';
-import { Payload } from 'src/common/interface/payload.interface';
+import { Payload } from '../common/interface/payload.interface';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -14,7 +14,7 @@ export class UserController {
     @Get('InfoPerso')
     getUser(@Req() req: Request): Promise<GetUserDto> {
         const user = req.user as Payload;
-      return this.userService.getUserById(user.idUtilisateur);
+        return this.userService.getUserById(user.idUtilisateur);
     }
 
     @Put('UpdateInfoPerso')
