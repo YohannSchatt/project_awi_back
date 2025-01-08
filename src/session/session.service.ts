@@ -78,16 +78,8 @@ export class SessionService {
     return await this.prisma.session.findFirst({
       where: {
         AND: [
-          {
-            dateDebut: {
-              lte: new Date(),
-            },
-          },
-          {
-            dateFin: {
-              gte: new Date(),
-            },
-          },
+          { dateDebut: { lte: new Date()} },
+          { dateFin: { gte: new Date() } },
         ],
       },
     });
