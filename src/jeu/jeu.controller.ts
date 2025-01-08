@@ -36,8 +36,8 @@ export class JeuController {
     await this.jeuService.createJeu(createJeuDto);
   }
 
-  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('creerJeuUnitaire')
   async createJeuUnitaire(@Body() createJeuUnitaireDto: CreateJeuUnitaireDto): Promise<void> {
     await this.jeuService.createJeuUnitaire(createJeuUnitaireDto);
