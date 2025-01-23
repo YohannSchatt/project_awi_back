@@ -10,6 +10,8 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { JeuUnitaire, Role } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
 import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
+import { CatalogueRequestDto } from './dto/catalogue-request.dto';
+import { CatalogueResponseDto } from './dto/catalogue-response.dto';
 
 @Controller('jeu')
 export class JeuController {
@@ -64,5 +66,12 @@ export class JeuController {
   @Get('listInfoAchatJeuUnitaireDisponible')
   async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoJeuUnitaireDisponibleDto[]> {
     return this.jeuService.getListInfoAchatJeuUnitaireDisponible();
+  }
+
+  @Get('catalogue')
+  async getCatalogue(
+    @Body() dto: CatalogueRequestDto,
+  ): Promise<CatalogueResponseDto> {
+    return this.jeuService.getCatalogue(dto);
   }
 }
