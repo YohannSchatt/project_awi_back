@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 // import { CustomLogger } from './custom-logger.service';
@@ -13,10 +12,11 @@ async function bootstrap() {
   /*, {logger: new CustomLogger(),}*/
  );
 
- const front_end_url = process.env.FRONT_END_URL || 'http://localhost:4200';
+ const configService = app.get(ConfigService);
+ const urlFront = configService.get<string>('database.url_front');
 
  app.enableCors({
-  origin: ['http://localhost:4200', 'http://127.0.0.1:4200', front_end_url],
+  origin: ['http://localhost:4200', 'http://127.0.0.1:4200', urlFront],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
