@@ -9,6 +9,7 @@ export class TokenValidationMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies['Authorization'];
+    console.log(token);
 
     if (token && !(await this.authService.isTokenValid(token))) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
