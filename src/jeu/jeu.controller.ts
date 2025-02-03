@@ -61,14 +61,14 @@ export class JeuController {
     await this.jeuService.enregistrerAchat(idsJeuUnitaire);
   }
 
-  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('listInfoAchatJeuUnitaireDisponible')
   async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoJeuUnitaireDisponibleDto[]> {
     return this.jeuService.getListInfoAchatJeuUnitaireDisponible();
   }
 
-  @Get('catalogue')
+  @Post('catalogue')
   async getCatalogue(
     @Body() dto: CatalogueRequestDto,
   ): Promise<CatalogueResponseDto> {
