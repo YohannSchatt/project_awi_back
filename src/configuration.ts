@@ -14,4 +14,5 @@ export default () => ({
       url_front : process.env.FRONTEND_URL || 'default_url_front',
       email_mdp : process.env.EMAIL_MDP.replace(/_/g, ' ') || 'default_email_mdp',
     },
+    node_env: process.env.NODE_ENV || 'development',
   });

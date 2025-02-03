@@ -19,6 +19,7 @@ async function bootstrap() {
   origin: ['http://localhost:4200', 'http://127.0.0.1:4200', urlFront],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
 })
 
   app.useGlobalPipes(new ValidationPipe({

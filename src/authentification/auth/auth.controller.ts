@@ -4,12 +4,14 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-In.dto';
 import { verify } from 'crypto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { config } from 'process';
+import { ConfigService } from '@nestjs/config';
 
 // The AuthController is a RESTful controller that implements the auth feature.
 // The @Controller() decorator defines the base route for the auth feature.
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private configService: ConfigService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -36,7 +38,11 @@ export class AuthController {
     }
     try {
       const result = await this.authService.signIn(SignInDto);
-      res.cookie('Authorization', 'Bearer ' + result.access_token, { httpOnly: true, maxAge: 3600000 });
+      res.cookie('Authorization', 'Bearer ' + result.access_token, { 
+        httpOnly: true, 
+        maxAge: 3600000,
+        secure: this.configService.get('node_env') === 'production' ? true : false,
+        sameSite: "none"});
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'User logged in successfully',
