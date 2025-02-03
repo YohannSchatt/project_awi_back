@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { EmailService } from 'src/email/email/email.service';
+import { EmailService } from 'src/email/email.service';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 

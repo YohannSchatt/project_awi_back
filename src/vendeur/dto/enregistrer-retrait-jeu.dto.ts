@@ -1,9 +1,17 @@
-import { IsNumber } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class EnregistrerRetraitJeuDto {
     @IsNumber()
+    @IsNotEmpty()
     idVendeur: number;
-    @IsNumber()
-    idJeu: number;
+
+    @IsOptional()
+    idJeu: number[];
+
+    @IsBoolean()
+    @IsNotEmpty()
+    argent: boolean;
+
+
 }
 

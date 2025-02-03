@@ -1,4 +1,4 @@
-import { Controller, Post, Body , Get, Patch, Param, ParseIntPipe, Search, Req } from '@nestjs/common';
+import { Controller, Post, Body , Get, Patch, Res,Param, ParseIntPipe, Search, Req, BadRequestException } from '@nestjs/common';
 import { PositiveIntPipe } from 'src/pipe/positiveIntPipe';
 import { VendeurService } from './vendeur.service';
 import { CreateVendeurDto } from './dto/create-vendeur.dto';
@@ -12,6 +12,7 @@ import { SearchVendeurDto } from './dto/search-vendeur.dto';
 import { UpdateVendeurDto } from './dto/update-vendeur.dto';
 // import { Request } from 'express';
 import { EnregistrerRetraitJeuDto } from './dto/enregistrer-retrait-jeu.dto';
+import { GetArgent } from './dto/getArgent.dto';
 
 
 @Roles([Role.ADMIN,Role.GESTIONNAIRE])
@@ -30,9 +31,29 @@ export class VendeurController {
     return this.vendeurService.updateVendeur(updateVendeurDto);
   }
 
-  @Post('enregistrerRetraitJeu')
-  enregistrerRetraitJeu(@Body() enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto) {
-    this.vendeurService.enregistrerRetraitJeu(enregistrerRetraitJeuDto);
+  @Post('enregistrerRetraitJeuArgent')
+  enregistrerRetraitJeu(@Res() res,@Body() enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto) {
+
+    if (enregistrerRetraitJeuDto.idJeu.length <= 0 && !enregistrerRetraitJeuDto.argent) {
+      throw new BadRequestException('Vous devez choisir un jeu ou de l\'argent à retirer');
+    }
+
+    if (enregistrerRetraitJeuDto.idJeu.length > 0) {
+      this.vendeurService.enregistrerRetraitJeu(enregistrerRetraitJeuDto.idVendeur,enregistrerRetraitJeuDto.idJeu);
+    }
+
+
+    if (enregistrerRetraitJeuDto.argent) {
+      this.vendeurService.enregistrerRetraitArgent(enregistrerRetraitJeuDto.idVendeur);
+    }
+
+    return res.status(200).send('Retrait effectué');
+  }
+
+  @Post('GetArgent')
+  getArgentVendeur(@Body() getArgentDto : GetArgent): Promise<number> {
+    const argent = this.vendeurService.getArgentVendeur(getArgentDto.idVendeur);
+    return argent
   }
 
   @Post('enregistrerRetraitArgent')

@@ -126,9 +126,11 @@ export class JeuService {
       select: {
         idJeuUnitaire: true,
         prix: true,
+        etat: true,
         jeu: {
           select: {
             nom: true,
+            editeur: true,
           },
         },
       },
@@ -137,6 +139,8 @@ export class JeuService {
       idJeuUnitaire: jeu.idJeuUnitaire,
       prix: Number(jeu.prix),
       nom: jeu.jeu.nom,
+      editeur: jeu.jeu.editeur,
+      etat: jeu.etat,
     }));
   }
   
@@ -215,9 +219,11 @@ export class JeuService {
       select: {
         idJeuUnitaire: true,
         prix: true,
+        etat : true,
         jeu: {
           select: {
             nom: true,
+            editeur: true, 
           },
         },
       },
@@ -228,6 +234,8 @@ export class JeuService {
       idJeuUnitaire: jeu.idJeuUnitaire,
       prix: Number(jeu.prix),
       nom: jeu.jeu.nom,
+      editeur: jeu.jeu.editeur,
+      etat: jeu.etat,
     }));
   }
  

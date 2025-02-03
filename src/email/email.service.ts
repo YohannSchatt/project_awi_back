@@ -11,17 +11,20 @@ export class EmailService {
     private transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'jeutaroevent@gmail.com', // Votre email
-          pass: this.configService.get<string>('email_mdp'), // Votre mot de passe
+          user: 'jeutaroevent@gmail.com',
+          pass: this.configService.get<string>('email_mdp'), 
         },
       });
 
-    private async sendEmail(email: string, subject: string, text: string) {
+    private async sendEmail(email: string, subject: string, text: string, pdf?: Buffer) {
+        const attachments = pdf ? [{filename: 'invoice.pdf', content: pdf}] : [];
+
         const mailOptions = {
             from: 'jeutaroevent@gmail.com', // Adresse de l'expéditeur
             to: email, // Adresse du destinataire
             subject: subject, // Sujet de l'email
             text: text, // Contenu de l'email
+            attachments: attachments,
           };
         
           try {
@@ -36,6 +39,12 @@ export class EmailService {
         const subject = 'Your password for Jeutaro account';
         const text = `Your password is: ${password}\n Please change it as soon as possible \n Le lien pour vous connecter est : ${this.configService.get('database.url_front')}/gestion`;
         await this.sendEmail(email, subject, text);
+    }
+
+    async sendInvoice(email: string, pdf: Buffer) {
+        const subject = 'Invoice';
+        const text = 'Please find attached the invoice';
+        await this.sendEmail(email, subject, text, pdf);
     }
 
     generateRandomPassword(length: number): string {

@@ -3,7 +3,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { EmailService } from 'src/email/email/email.service';
+import { EmailService } from 'src/email/email.service';
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
