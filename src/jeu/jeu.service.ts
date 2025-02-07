@@ -8,6 +8,13 @@ import { Jeu, JeuUnitaire } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
 import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
 
+import { CatalogueRequestDto } from './dto/catalogue-request.dto';
+import { CatalogueResponseDto } from './dto/catalogue-response.dto';
+
+import * as fs from 'fs';
+import * as path from 'path';
+
+
 @Injectable()
 export class JeuService {
   constructor(private readonly prisma: PrismaService) {}
@@ -87,9 +94,6 @@ export class JeuService {
     }));
   }
 
-  getStringifiedImage(idJeu: number): string {
-    return 'to complete';
-  }
 
   async vendreJeuUnitaire(idJeuUnitaire: number): Promise<void> {
     const jeuUnitaire = await this.prisma.jeuUnitaire.findUnique({
@@ -142,6 +146,20 @@ export class JeuService {
       editeur: jeu.jeu.editeur,
       etat: jeu.etat,
     }));
+  }
+
+  private getStringifiedImage(idJeu: number): string {
+    try {
+      // Remonte de "src/jeu" vers la racine, puis pointe sur "images"
+      const filePath = path.join(__dirname, '..', '..', 'images', `${idJeu}.png`);
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+        return fileBuffer.toString('base64');
+      }
+      return '';
+    } catch (error) {
+      return '';
+    }
   }
   
   async enregistrerAchat(idsJeuUnitaire: number[]): Promise<void> {
@@ -238,5 +256,61 @@ export class JeuService {
       etat: jeu.etat,
     }));
   }
- 
+  
+async getCatalogue(query: CatalogueRequestDto): Promise<CatalogueResponseDto> {
+  const { nom, editeur, prixMin, prixMax, page } = query;
+  const pageSize = 10; // Nombre d’éléments par page
+
+  // Construction du where pour la table JeuUnitaire
+  // On cherche les JeuUnitaires en statut DISPONIBLE
+  // et on filtre sur le nom/editeur dans le modèle Jeu
+  const whereClause: any = {
+    statut: 'DISPONIBLE',
+    prix: {
+      gte: prixMin ?? 0,
+      lte: prixMax ?? 9999999,
+    },
+    jeu: {
+      // Si le champ est vide, on ne filtre pas
+      nom: nom ? { contains: nom, mode: 'insensitive' } : undefined,
+      editeur: editeur ? { contains: editeur, mode: 'insensitive' } : undefined,
+    },
+  };
+
+  // Comptage du nombre total d’éléments correspondants
+  const totalItems = await this.prisma.jeuUnitaire.count({ where: whereClause });
+
+  // Calcul du nombre de pages
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  // Pagination
+  const offset = (page - 1) * pageSize;
+
+  // Récupération des JeuUnitaires filtrés et paginés
+  const jeuUnitaires = await this.prisma.jeuUnitaire.findMany({
+    where: whereClause,
+    skip: offset,
+    take: pageSize,
+    include: {
+      jeu: true, // Pour avoir nom, editeur, description, etc.
+      vendeur: true, // Pour avoir les informations du vendeur
+    },
+  });
+
+  // Conversion des résultats en DTO
+  const items = jeuUnitaires.map((jeuU) => ({
+    id: jeuU.idJeuUnitaire,
+    nom: jeuU.jeu.nom,
+    description: jeuU.jeu.description ?? '',
+    editeur: jeuU.jeu.editeur,
+    prix: Number(jeuU.prix),
+    image: this.getStringifiedImage(jeuU.idJeu),
+    prenomVendeur: jeuU.vendeur.prenom,
+    nomVendeur: jeuU.vendeur.nom,
+    etat: jeuU.etat,
+  }));
+
+  return { totalPages, nbJeux: totalItems, items };
+}
+
 }

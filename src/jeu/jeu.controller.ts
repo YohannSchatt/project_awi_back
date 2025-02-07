@@ -10,6 +10,8 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { JeuUnitaire, Role } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
 import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
+import { CatalogueRequestDto } from './dto/catalogue-request.dto';
+import { CatalogueResponseDto } from './dto/catalogue-response.dto';
 
 @Controller('jeu')
 export class JeuController {
@@ -36,8 +38,8 @@ export class JeuController {
     await this.jeuService.createJeu(createJeuDto);
   }
 
-  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('creerJeuUnitaire')
   async createJeuUnitaire(@Body() createJeuUnitaireDto: CreateJeuUnitaireDto): Promise<void> {
     await this.jeuService.createJeuUnitaire(createJeuUnitaireDto);
@@ -59,10 +61,17 @@ export class JeuController {
     await this.jeuService.enregistrerAchat(idsJeuUnitaire);
   }
 
-  // @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('listInfoAchatJeuUnitaireDisponible')
   async getListInfoAchatJeuUnitaireDisponible(): Promise<InfoJeuUnitaireDisponibleDto[]> {
     return this.jeuService.getListInfoAchatJeuUnitaireDisponible();
+  }
+
+  @Post('catalogue')
+  async getCatalogue(
+    @Body() dto: CatalogueRequestDto,
+  ): Promise<CatalogueResponseDto> {
+    return this.jeuService.getCatalogue(dto);
   }
 }
