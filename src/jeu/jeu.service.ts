@@ -7,13 +7,12 @@ import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
 import { Jeu, JeuUnitaire } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
 import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
-
 import { CatalogueRequestDto } from './dto/catalogue-request.dto';
 import { CatalogueResponseDto } from './dto/catalogue-response.dto';
-
 import * as fs from 'fs';
 import * as path from 'path';
-
+import { UpdateJeuDto } from './dto/updtate-jeu.dto';
+import { GetJeuResponseDto } from './dto/get-jeu-response';
 
 @Injectable()
 export class JeuService {
@@ -50,15 +49,108 @@ export class JeuService {
     return { jeux: infoJeux };
   }
 
+
+
   async createJeu(createJeuDto: CreateJeuDto): Promise<Jeu> {
-    return this.prisma.jeu.create({
+    // Vérification de l'unicité du nom du jeu
+    const existingJeu = await this.prisma.jeu.findFirst({
+      where: { nom: createJeuDto.nom },
+    });
+
+    if (existingJeu) {
+      throw new BadRequestException('Un jeu avec ce nom existe déjà.');
+    }
+
+    const newJeu = await this.prisma.jeu.create({
       data: {
         nom: createJeuDto.nom,
         editeur: createJeuDto.editeur,
         description: createJeuDto.description || null,
       },
     });
+
+    if (createJeuDto.image) {
+      const destDir = path.join(__dirname, '..', '..', 'images');
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+      const newImageName = `${newJeu.idJeu}.png`;
+      const destPath = path.join(destDir, newImageName);
+      const imageBuffer = Buffer.from(createJeuDto.image, 'base64');
+      fs.writeFileSync(destPath, imageBuffer);
+    }
+
+    return newJeu;
   }
+
+  async updateJeu(updateJeuDto: UpdateJeuDto): Promise<Jeu> {
+    // Vérifier l'existence du jeu
+
+
+    const jeuExistant = await this.prisma.jeu.findUnique({
+      where: { idJeu: Number(updateJeuDto.idJeu) },
+    });
+    if (!jeuExistant) {
+      throw new NotFoundException(`Aucun jeu avec l'id ${updateJeuDto.idJeu} trouvé`);
+    }
+
+    // Vérifier l'unicité du nom s'il est différent
+    if (jeuExistant.nom !== updateJeuDto.nom) {
+      const jeuAvecMemeNom = await this.prisma.jeu.findFirst({
+        where: { nom: updateJeuDto.nom },
+      });
+      if (jeuAvecMemeNom) {
+        throw new BadRequestException('Un jeu avec ce nom existe déjà.');
+      }
+    }
+
+    // Supprimer l'image existante
+    const imagePath = path.join(__dirname, '..', '..', 'images', `${jeuExistant.idJeu}.png`);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+
+    // Mettre à jour les champs dans la base
+    const updatedJeu = await this.prisma.jeu.update({
+      where: { idJeu: Number(updateJeuDto.idJeu) },
+      data: {
+        nom: updateJeuDto.nom,
+        editeur: updateJeuDto.editeur,
+        description: updateJeuDto.description || null,
+      },
+    });
+
+    // Gérer l'image
+    if (updateJeuDto.image) {
+      const destDir = path.join(__dirname, '..', '..', 'images');
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+      const newImageName = `${updatedJeu.idJeu}.png`;
+      const destPath = path.join(destDir, newImageName);
+      const imageBuffer = Buffer.from(updateJeuDto.image, 'base64');
+      fs.writeFileSync(destPath, imageBuffer);
+    }
+
+    return updatedJeu;
+  }
+
+async getJeu(idJeu: number): Promise<GetJeuResponseDto> {
+  const jeu = await this.prisma.jeu.findUnique({
+    where: { idJeu },
+  });
+  if (!jeu) {
+    throw new NotFoundException(`Aucun jeu avec l'id ${idJeu} trouvé`);
+  }
+  const image = this.getStringifiedImage(idJeu);
+  return {
+    idJeu: jeu.idJeu,
+    nom: jeu.nom,
+    editeur: jeu.editeur,
+    description: jeu.description ?? '',
+    image,
+  };
+}
 
   async createJeuUnitaire(createJeuUnitaireDto: CreateJeuUnitaireDto): Promise<void> {
     const idJeu: number = createJeuUnitaireDto.idJeu;
@@ -156,9 +248,9 @@ export class JeuService {
         const fileBuffer = fs.readFileSync(filePath);
         return fileBuffer.toString('base64');
       }
-      return '';
+      return 'notfound';
     } catch (error) {
-      return '';
+      return 'notfound';
     }
   }
   
@@ -311,6 +403,32 @@ async getCatalogue(query: CatalogueRequestDto): Promise<CatalogueResponseDto> {
   }));
 
   return { totalPages, nbJeux: totalItems, items };
+}
+
+
+async deleteJeu(idJeu: number): Promise<void> {
+  // Vérifier l'existence du jeu
+  const jeuExistant = await this.prisma.jeu.findUnique({
+    where: { idJeu },
+  });
+  if (!jeuExistant) {
+    throw new NotFoundException(`Aucun jeu avec l'id ${idJeu} trouvé`);
+  }
+
+
+
+  // Supprimer le jeu dans la base
+  try {
+    await this.prisma.jeu.delete({ where: { idJeu } }).then(() => {
+  // Supprimer l'image correspondante si elle existe
+  const imagePath = path.join(__dirname, '..', '..', 'images', `${idJeu}.png`);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    });
+  } catch (error) {
+    throw new BadRequestException('Impossible de supprimer le jeu.');
+  }
 }
 
 }
