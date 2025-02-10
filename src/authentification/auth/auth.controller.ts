@@ -65,10 +65,10 @@ export class AuthController {
   @Post('logout')
   async signOut(@Req() req : Request, @Res() res : Response) {
 
-    res.clearCookie('Authorization');
+    res.clearCookie('Authorization', { path: '/' });
+    res.setHeader('Cache-Control', 'no-store');
 
     return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
       message: 'User logged out successfully',
     });
   }
