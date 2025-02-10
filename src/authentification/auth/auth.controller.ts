@@ -63,14 +63,15 @@ export class AuthController {
   }
 
   @Post('logout')
-  async signOut(@Req() req : Request, @Res() res : Response) {
-
-    res.clearCookie('Authorization', { path: '/' });
-    res.setHeader('Cache-Control', 'no-store');
-
-    return res.status(HttpStatus.OK).json({
-      message: 'User logged out successfully',
+  @Post('logout')
+  logout(@Res() res: Response) {
+    res.clearCookie('Authorization', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
     });
+    return res.status(200).json({ message: 'Déconnexion réussie' });
   }
 
   @Post('refresh')
