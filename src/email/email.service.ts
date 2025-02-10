@@ -8,17 +8,17 @@ export class EmailService {
 
     constructor(private configService: ConfigService) {}
 
-    private transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'jeutaroevent@gmail.com',
-          pass: this.configService.get<string>('email_mdp'), 
-        },
-      });
-
     private async sendEmail(email: string, subject: string, text: string, pdf?: Buffer) {
         console.log(this.configService.get<string>('email_mdp'));
         const attachments = pdf ? [{filename: 'invoice.pdf', content: pdf}] : [];
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'jeutaroevent@gmail.com',
+            pass: this.configService.get<string>('email_mdp'), 
+          },
+        });
 
         const mailOptions = {
             from: 'jeutaroevent@gmail.com', // Adresse de l'expéditeur
@@ -29,7 +29,7 @@ export class EmailService {
           };
         
           try {
-            const info = await this.transporter.sendMail(mailOptions);
+            const info = await transporter.sendMail(mailOptions);
             console.log('Email sent: ' + info.response);
           } catch (error) {
             throw new BadRequestException(error.message);
