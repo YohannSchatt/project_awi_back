@@ -6,6 +6,9 @@ import { verify } from 'crypto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { config } from 'process';
 import { ConfigService } from '@nestjs/config';
+import { Role } from '@prisma/client';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 // The AuthController is a RESTful controller that implements the auth feature.
 // The @Controller() decorator defines the base route for the auth feature.
@@ -60,7 +63,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async signOut(@Req() req : Request, @Res() res : Response) {
     const token = req.cookies['Authorization'];
 
