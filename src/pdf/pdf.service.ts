@@ -119,7 +119,6 @@ export class PDFService {
 
         const pdfBytes = await pdfDoc.save();
         const pathFileName : string = 'src/pdf/invoice/' + invoiceData.email + "_" + this.getDateForInvoice(new Date(invoiceData.date)) + '.pdf';
-        this.saveInvoicePDF(pathFileName, pdfBytes);
         return Buffer.from(pdfBytes);
     }
 
