@@ -59,7 +59,7 @@ export class AuthController {
     }
   }
 
-  @Get('logout')
+  @Post('logout')
   @UseGuards(JwtAuthGuard)
   async signOut(@Req() req : Request, @Res() res : Response) {
     const token = req.cookies['Authorization'];
