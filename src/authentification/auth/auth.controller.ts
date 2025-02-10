@@ -41,8 +41,8 @@ export class AuthController {
       res.cookie('Authorization', 'Bearer ' + result.access_token, { 
         httpOnly: true, 
         maxAge: 3600000,
-        // secure: this.configService.get('node_env') === 'production' ? true : false,
-        // sameSite: "none"
+        secure: this.configService.get('node_env') === 'production' ? true : false,
+        sameSite: "none"
         });
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
