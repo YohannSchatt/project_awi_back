@@ -4,7 +4,7 @@ import { CreateJeuDto } from './dto/create-jeu.dto';
 import { CatalogueDto } from './dto/response-catalogue.dto';
 import { InfoJeuUnitaireDto } from './dto/response-catalogue.dto';
 import { CreateJeuUnitaireDto } from './dto/create-jeu-unitaire.dto';
-import { Jeu, JeuUnitaire } from '@prisma/client';
+import { Etat, Jeu, JeuUnitaire, Statut } from '@prisma/client';
 import { InfoJeuDto } from './dto/response-list-jeu.dto';
 import { InfoJeuUnitaireDisponibleDto } from './dto/info-jeu-unitaire-disponible.dto';
 
@@ -13,6 +13,8 @@ import { CatalogueResponseDto } from './dto/catalogue-response.dto';
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { InfoJeuDBDto } from './dto/infoJeuDB.dto';
+import { InfoJeuStockDto } from './dto/infoJeuStock.dto';
 
 
 @Injectable()
@@ -257,60 +259,119 @@ export class JeuService {
     }));
   }
   
-async getCatalogue(query: CatalogueRequestDto): Promise<CatalogueResponseDto> {
-  const { nom, editeur, prixMin, prixMax, page } = query;
-  const pageSize = 10; // Nombre d’éléments par page
+  async getCatalogue(query: CatalogueRequestDto): Promise<CatalogueResponseDto> {
+    const { nom, editeur, prixMin, prixMax, page } = query;
+    const pageSize = 10; // Nombre d’éléments par page
 
-  // Construction du where pour la table JeuUnitaire
-  // On cherche les JeuUnitaires en statut DISPONIBLE
-  // et on filtre sur le nom/editeur dans le modèle Jeu
-  const whereClause: any = {
-    statut: 'DISPONIBLE',
-    prix: {
-      gte: prixMin ?? 0,
-      lte: prixMax ?? 9999999,
-    },
-    jeu: {
-      // Si le champ est vide, on ne filtre pas
-      nom: nom ? { contains: nom, mode: 'insensitive' } : undefined,
-      editeur: editeur ? { contains: editeur, mode: 'insensitive' } : undefined,
-    },
-  };
+    // Construction du where pour la table JeuUnitaire
+    // On cherche les JeuUnitaires en statut DISPONIBLE
+    // et on filtre sur le nom/editeur dans le modèle Jeu
+    const whereClause: any = {
+      statut: Statut.DISPONIBLE,
+      prix: {
+        gte: prixMin ?? 0,
+        lte: prixMax ?? 9999999,
+      },
+      jeu: {
+        // Si le champ est vide, on ne filtre pas
+        nom: nom ? { contains: nom, mode: 'insensitive' } : undefined,
+        editeur: editeur ? { contains: editeur, mode: 'insensitive' } : undefined,
+      },
+    };
 
-  // Comptage du nombre total d’éléments correspondants
-  const totalItems = await this.prisma.jeuUnitaire.count({ where: whereClause });
+    // Comptage du nombre total d’éléments correspondants
+    const totalItems = await this.prisma.jeuUnitaire.count({ where: whereClause });
 
-  // Calcul du nombre de pages
-  const totalPages = Math.ceil(totalItems / pageSize);
+    // Calcul du nombre de pages
+    const totalPages = Math.ceil(totalItems / pageSize);
 
-  // Pagination
-  const offset = (page - 1) * pageSize;
+    // Pagination
+    const offset = (page - 1) * pageSize;
 
-  // Récupération des JeuUnitaires filtrés et paginés
-  const jeuUnitaires = await this.prisma.jeuUnitaire.findMany({
-    where: whereClause,
-    skip: offset,
-    take: pageSize,
-    include: {
-      jeu: true, // Pour avoir nom, editeur, description, etc.
-      vendeur: true, // Pour avoir les informations du vendeur
-    },
-  });
+    // Récupération des JeuUnitaires filtrés et paginés
+    const jeuUnitaires = await this.prisma.jeuUnitaire.findMany({
+      where: whereClause,
+      skip: offset,
+      take: pageSize,
+      include: {
+        jeu: true, // Pour avoir nom, editeur, description, etc.
+        vendeur: true, // Pour avoir les informations du vendeur
+      },
+    });
 
-  // Conversion des résultats en DTO
-  const items = jeuUnitaires.map((jeuU) => ({
-    id: jeuU.idJeuUnitaire,
-    nom: jeuU.jeu.nom,
-    description: jeuU.jeu.description ?? '',
-    editeur: jeuU.jeu.editeur,
-    prix: Number(jeuU.prix),
-    image: this.getStringifiedImage(jeuU.idJeu),
-    prenomVendeur: jeuU.vendeur.prenom,
-    nomVendeur: jeuU.vendeur.nom,
-    etat: jeuU.etat,
-  }));
+    // Conversion des résultats en DTO
+    const items = jeuUnitaires.map((jeuU) => ({
+      id: jeuU.idJeuUnitaire,
+      nom: jeuU.jeu.nom,
+      description: jeuU.jeu.description ?? '',
+      editeur: jeuU.jeu.editeur,
+      prix: Number(jeuU.prix),
+      image: this.getStringifiedImage(jeuU.idJeu),
+      prenomVendeur: jeuU.vendeur.prenom,
+      nomVendeur: jeuU.vendeur.nom,
+      etat: jeuU.etat,
+    }));
 
-  return { totalPages, nbJeux: totalItems, items };
-}
+    return { totalPages, nbJeux: totalItems, items };
+  }
 
+
+  async updateEtatJeuUnitaire(idJeuUnitaire: number, statut: Statut): Promise<Boolean> {
+    try {
+      const res = await this.prisma.jeuUnitaire.updateMany({
+        where: { idJeuUnitaire: idJeuUnitaire },
+        data: { statut: statut },
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async getJeuxByEtat(statut: Statut, idJeu?: number, Idvendeur?: number): Promise<InfoJeuStockDto[]> {
+    const jeux = await this.prisma.jeuUnitaire.findMany({
+      where: { 
+        statut: statut, 
+        idJeu: idJeu ? idJeu : undefined,
+        idVendeur: Idvendeur  ? Idvendeur : undefined,
+      },
+      select: {
+        idJeuUnitaire: true,
+        prix: true,
+        jeu: {
+          select: {
+            nom: true,
+            editeur: true,
+            description: true,
+            idJeu: true,
+          },
+        },
+      },
+    });
+
+    return jeux.map((jeu) => ({
+      idJeuUnitaire: jeu.idJeuUnitaire,
+      prix: Number(jeu.prix),
+      nom: jeu.jeu.nom,
+      editeur: jeu.jeu.editeur,
+      statut : statut,
+      description: jeu.jeu.description,
+    }));
+  }
+
+  getDBJeu(nom?: string, editeur?: string, IdJeu?: number): Promise<InfoJeuDBDto[]> {
+    return this.prisma.jeu.findMany({
+      where: {
+        nom: nom ? { contains: nom, mode: 'insensitive' } : undefined,
+        editeur: editeur ? { contains: editeur, mode: 'insensitive' } : undefined,
+        idJeu: IdJeu ? IdJeu : undefined,
+      },
+      select: {
+        nom: true,
+        editeur: true,
+        description: true,
+        idJeu: true,
+      },
+    });
+  }
 }
