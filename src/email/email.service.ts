@@ -17,6 +17,7 @@ export class EmailService {
       });
 
     private async sendEmail(email: string, subject: string, text: string, pdf?: Buffer) {
+        console.log(this.configService.get<string>('email_mdp'));
         const attachments = pdf ? [{filename: 'invoice.pdf', content: pdf}] : [];
 
         const mailOptions = {
