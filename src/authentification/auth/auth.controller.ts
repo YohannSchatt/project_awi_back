@@ -63,12 +63,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @Roles([Role.ADMIN, Role.GESTIONNAIRE])
-  @UseGuards(JwtAuthGuard, RolesGuard)
   async signOut(@Req() req : Request, @Res() res : Response) {
-    const token = req.cookies['Authorization'];
-
-    await this.authService.invalidateToken(token);
 
     res.clearCookie('Authorization');
 
