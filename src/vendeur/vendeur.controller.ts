@@ -1,12 +1,12 @@
 import { Controller, Post, Body , Get, Patch, Res,Param, ParseIntPipe, Search, Req, BadRequestException } from '@nestjs/common';
-import { PositiveIntPipe } from 'src/pipe/positiveIntPipe';
+import { PositiveIntPipe } from '../pipe/positiveIntPipe';
 import { VendeurService } from './vendeur.service';
 import { CreateVendeurDto } from './dto/create-vendeur.dto';
 import { Vendeur } from '@prisma/client';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '@prisma/client';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { SearchVendeurDto } from './dto/search-vendeur.dto';
 import { UpdateVendeurDto } from './dto/update-vendeur.dto';
@@ -35,7 +35,7 @@ export class VendeurController {
   enregistrerRetraitJeu(@Res() res,@Body() enregistrerRetraitJeuDto: EnregistrerRetraitJeuDto) {
 
     if (enregistrerRetraitJeuDto.idJeu.length <= 0 && !enregistrerRetraitJeuDto.argent) {
-      throw new BadRequestException('Vous devez choisir un jeu ou de l\'argent à retirer');
+      res.status(400).send("Vous devez choisir un jeu ou de l'argent à retirer");
     }
 
     if (enregistrerRetraitJeuDto.idJeu.length > 0) {
@@ -56,10 +56,10 @@ export class VendeurController {
     return argent
   }
 
-  @Post('enregistrerRetraitArgent')
-  enregistrerRetraitArgent(@Body() enregistrerRetraitArgentDto) {
-    this.vendeurService.enregistrerRetraitArgent(enregistrerRetraitArgentDto);
-  }
+  // @Post('enregistrerRetraitArgent')
+  // enregistrerRetraitArgent(@Body() enregistrerRetraitArgentDto) {
+  //   this.vendeurService.enregistrerRetraitArgent(enregistrerRetraitArgentDto);
+  // }
 
   @Get('getListAllVendeur')
   getListAllVendeur(): Promise<Vendeur[]> {
@@ -71,15 +71,15 @@ export class VendeurController {
     return this.vendeurService.getListVendeur(searchVendeurDto.nom, searchVendeurDto.prenom, searchVendeurDto.email, searchVendeurDto.numero);
   }
 
-  @Get('getListVendeurCurrentSession')
-  getListCurrentSessionVendeur(): Promise<Vendeur[]> {
-    return this.vendeurService.getListVendeurCurrentSession();
-  }
+  // @Get('getListVendeurCurrentSession')
+  // getListCurrentSessionVendeur(): Promise<Vendeur[]> {
+  //   return this.vendeurService.getListVendeurCurrentSession();
+  // }
 
-  @Patch('reinscrireVendeur/:id')
-  InscriptionVendeur(@Param('id', ParseIntPipe, PositiveIntPipe) id: number): Promise<Vendeur> {
-    return this.vendeurService.updateVendeurParticipation(id);
-  }
+  // @Patch('reinscrireVendeur/:id')
+  // InscriptionVendeur(@Param('id', ParseIntPipe, PositiveIntPipe) id: number): Promise<Vendeur> {
+  //   return this.vendeurService.updateVendeurParticipation(id);
+  // }
 
 
 
