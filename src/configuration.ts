@@ -1,7 +1,9 @@
 // This file is used to define the configuration of the application.
 
 const replaceUnderscoresWithSpaces = (str: string) => {
-  return str.replace(/_/g, ' ');
+  const res = str.replace(/_/g, ' ');
+  console.log(res);
+  return res;
 };
 
 export default () => ({
